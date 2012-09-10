@@ -2,14 +2,15 @@
 
 \usepackage{graphicx}
 \usepackage{biblatex}
-\usepackage{microtype}
+\usepackage[spacing, tracking, kerning]{microtype}
 \usepackage{fullpage}
 \usepackage{titlesec}
 
-\title{Identifying Compiler Options to Minimize Energy Consumption for Embedded Platforms}
+\title{\bfseries Identifying Compiler Options to Minimize Energy Consumption for Embedded Platforms}
 \author{James Pallister, Simon Hollis, Jeremy Bennett}
 
-% \titleformat{\section}{}{\centering}{0em}{}
+\titleformat{\section}{\Large\bfseries\centering}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
 
 \begin{document}
 \maketitle
@@ -19,39 +20,88 @@
 
 \section*{Introduction}
 
-Talk about energy consumption in general
+% Talk about energy consumption in general
+% energy consumption important
+% many hardware features and optimizations (clock gating) to lower power consumption
+% but cant be considered independently, software must be considered too, as it controls the hardware
+Energy consumption is rapidly becoming one of the most important design constraints when writing software for embedded platforms. In the hardware space there have been many innovations for reducing the power consumption of electronic devices. However due to the software running on top of the hardware platform, the combination of software and hardware must be taken together when exploring energy usage.
 
-talk about embedded platforms
+% talk about embedded platforms
+% lots of different architectures
+% each has different energy consumption characteristics
+Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy.
 
-GCC Talk compiler optimisations affecting performance. Many people think that this has been done, but no extensive data gathered on. Mention iterative compilation paper: only looked at 2 optimisations for 3 limited test cases. Want to know if faster program=less energy.
+%GCC Talk compiler optimisations affecting performance.
+%Many people think that this has been done, but no extensive data gathered on.
+%Mention iterative compilation paper: only looked at 2 optimisations for 3 limited test cases. Want to know if faster program=less energy.
+% not many studies with real hardware measurements
+Compiler optimizations have the potential for energy savings with almost no changes to existing applications - just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor's architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option cannot be testing in isolation. A fractional factorial design method is used to construct the experiments when dealing with these interaction possibilities.
 
-Talk about how different benchmarks are needed, taken from contempory, chosen to be implementable,
-short paragraph, quick justification.
+% hardware
+All the energy measurements in this paper are taken using physical measurement circuitry attached to the processors. This avoids the use of models which could be inaccurate, or modelling an imaginary processor with no real world counterpart. By using commonly available platforms and processors along with some more novel architectures the results are more applicable while still providing insight into how different types of architectures perform. There are 5 platforms examined in this paper, shown in Table~\ref{Table:Platforms}.
 
 \begin{table*}
-\centering
-	\begin{tabular}{l c c c c c c c l}
-	Name				 	& Source 	& B & M & I & FP& T 		& License & Category \\
-	\hline
-	crc32					& MiBench 	& L & L & H & L & Single 	& GPL	& network, telecomm	\\
-	integer matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
-	cubic root solver		& MiBench 	& L & L & L & H & Single 	& GPL	& automotive	\\
-	2d fir					& WCET 		& M & H & L & H & Single 	& None	& automotive, consumer	\\
-	float matmult			& WCET 		& M & M & L & H & Single 	& GPL	& automotive, consumer	\\
-	dijkstra				& MiBench 	& H & M & M & L & Multi 	& GPL	& network	\\
-	blowfish				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	rjindael				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	sha						& MiBench 	& L & L & H & L & Multi 	& GPL	& network, security	\\
-	fdct					& WCET 		& M & H & H & L & Single 	& None	& consumer	\\
+	\begin{tabular}{l l l l l}
+		\textbf{Board name} & \textbf{Processor} & \textbf{RAM} & \textbf{Speed} & \textbf{Extra} \\
+		\hline
+		STM32F0DISCOVERY	& ARM Cortex-M0 		& 8KB		& 48 MHz		  & 64KB Flash\\
+		STM32VLDISCOVERY	& ARM Cortex-M3 		& 8KB		& 24 MHz		  & 128KB Flash\\
+		BeagleBone			& ARM Cortex-A8 		& 256MB		& 500 MHz		  & VFP/NEON, superscalar\\
+		EMEK3				& Adapteva E16 			& 32KB/core & 400 MHz		  & FPU, superscalar, 16 core NoC\\
+		XK1					& XMOS L1 				& 64KB		& 100 MHz 		& 4$\times$100MHz hardware threads \\
 	\end{tabular}
-\caption{Benchmarks selected, and the categories they fit in. Legend in Table~\ref{BenchmarkLegend}}
+	\caption{The platforms explored in this paper along with some relevant details.}
+	\label{Table:Platforms}
 \end{table*}
 
 
-There are 5 platforms examined in this paper:
-BLAH
+%talk about power, aswell.
+%less spikey power consumption,
+%less overall power consumption = less bulky power supplies
+For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply(REF),
 
-This paper covers the design and results of the experiment. First the experimental design is discussed, followed by a
+
+%Talk about how different benchmarks are needed, taken from contempory, chosen to be implementable,
+%short paragraph, quick justification.
+A set of benchmarks has been derived from contemporary suites, chosen to be implementable on the target platforms. This set of 10 benchmarks (shown in Table~\ref{Table:Benchmarks}) covers real world and contrived applications coving different aspects of the target platform. The benchmarks cover combinations of the following criteria:
+\begin{itemize}
+	\setlength{\itemsep}{0em}
+	% \setlength{\parskip}{1pt}
+	\vspace{-1mm}
+	\item \textbf{Integer pipeline intensity.} The frequency at which integer arithmetic instructions occur.
+	\item \textbf{Floating point intensity.} The frequency of floating point operations.
+	\item \textbf{Memory intensity.} This is whether the program requires a large amount of memory bandwidth or not.
+	\item \textbf{Branch frequency.} This metric describes how often the code branches.
+\end{itemize}
+
+
+\begin{table}
+\centering
+	\begin{tabular}{l c c c c c c c l}
+	\textbf{Name}			& \textbf{Source} 	& \textbf{Category} \\
+	\hline
+	crc32					& MiBench 	& network, telecomm	\\
+	integer matmult			& WCET	 	& automotive	\\
+	cubic root solver		& MiBench 	& automotive	\\
+	2d fir					& WCET 		& automotive, consumer	\\
+	float matmult			& WCET 		& automotive, consumer	\\
+	dijkstra				& MiBench 	& network	\\
+	blowfish				& MiBench 	& security	\\
+	rjindael				& MiBench 	& security	\\
+	sha						& MiBench 	& network, security	\\
+	fdct					& WCET 		& consumer	\\
+	\end{tabular}
+\caption{Benchmarks selected, and the categories they fit into.}
+\label{Table:Benchmarks}
+\end{table}
+
+
+% Briefly discuss what we do
+% Using fractional factorial design
+% Using a fractional factorial design the individual optimizations comprising each optimization level in GCC are analysed for their main and two-way interactions.
+% This paper extensively evaluates possible optimizations available in GCC.
+
+This paper covers the design and results of the experiment. First previous work in this space is discussed, along with the novel contribution this paper makes. After this the experimental design is discussed, followed by a brief description of the hardware setting. Then the experiments performed presented, with results. Finally the results are evaluated and the conclusions drawn are presented.
 
 \section*{Previous work}
 
@@ -59,7 +109,9 @@ Mention not much previous work. Lots of work done on performance, and mostly ass
 
 Talk a lot about iterative compilation for energy paper. lack of benchmarks, only looks at loop unrolling and tilesize (todo check). The only tests they did were matrix multiplication, vector by matrix multiplication (and one more). Also only one architecture. The energy consumption might be very dependant on the architecture and way the pipeline is structured, so their results may not be applicable to other platforms.
 
-performance==energy, only tested the overall optimization levels O1-O4 and 4 individual optimizations, simulated with wattch - inherits all the inaccuracies that wattch might have
+performance==energy, only tested the overall optimization levels O1-O4 and 4 individual optimizations, simulated with wattch - inherits all the inaccuracies that wattch might have. the 4 individual optimizations are only applied individual, no exploration of the interactions between them is attempted. ar
+
+what can the poor compiler do - most measurements on gatelevel sim. only one platform
 
 \section*{Hardware Setup}
 
@@ -89,7 +141,11 @@ A FFD design of resolution 5 was used to evaluate GCC's 37 flags turned on by \t
 
 \subsection*{Second Optimization Level (O2)}
 
-As with thie \texttt{O1} experiment this uses a resolution 5 FFD to examine the 36 factors enabled by \texttt{-O2}. This optimization level enables more advanced
+As with the \texttt{O1} experiment this uses a resolution 5 FFD to examine the 36 factors enabled by \texttt{-O2}. This optimization level enables more advanced optimizations, such as instruction scheduling an various peephole optimizations.
+
+\subsection*{Third Optimization Level (O3)}
+
+As with the previous two experiments this uses an FFD to examine the 9 factors enabled by \texttt{-O3}. This optimization level enables the most aggressive optimizations typically used, including optimizations that increase performance at the expense of code size.
 
 \subsection*{Incremental Tests}
 
