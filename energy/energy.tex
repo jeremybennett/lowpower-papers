@@ -16,7 +16,22 @@
 \maketitle
 \section*{Abstract}
 
-\textit{ABSTRACT}
+\textit{
+Abstract astract abtrct absrct astrct abstract stract bstract
+astract abtrct absrct astrct abstract bstract
+astract abtrct absrct astrct stract bstract
+astract abtrct absrct astrct stract bstract
+astract abtrct absrct astrct abstract bstract
+astractastrct abstract stract bstract
+astract abtrct absrct astrct abstract bstract
+astract abtrct absrct astrct stract bstract
+astract abtrct absrct astrct abstract bstract
+astractastrct abstract stract bstract
+astract abtrct absrct astrct abstract bstract
+astract abtrct absrct astrct stract bstract
+astractastrct abstract stract bstract
+astract abtrct absrct astrct abstract stract bstract
+}
 
 \section*{Introduction}
 
@@ -54,6 +69,27 @@ All the energy measurements in this paper are taken using physical measurement c
 	\label{Table:Platforms}
 \end{table*}
 
+\begin{table}
+	\centering
+	\begin{tabular}{l c l}
+	\textbf{Name}			& \textbf{Source} 	& \textbf{Category} \\
+	\hline
+	2d fir					& WCET 		& automotive, consumer	\\
+	blowfish				& MiBench 	& security	\\
+	crc32					& MiBench 	& network, telecomm	\\
+	cubic solver			& MiBench 	& automotive	\\
+	dijkstra				& MiBench 	& network	\\
+	fdct					& WCET 		& consumer	\\
+	float matmult			& WCET 		& automotive, consumer	\\
+	int matmult				& WCET	 	& automotive	\\
+	rjindael				& MiBench 	& security	\\
+	sha						& MiBench 	& network, security	\\
+	\end{tabular}
+\caption{Benchmarks selected, and the categories they fit into.}
+\label{Table:Benchmarks}
+\end{table}
+
+
 
 %talk about power, aswell.
 %less spikey power consumption,
@@ -75,25 +111,6 @@ A set of benchmarks has been derived from contemporary suites, chosen to be impl
 \end{itemize}
 
 
-\begin{table}
-\centering
-	\begin{tabular}{l c c c c c c c l}
-	\textbf{Name}			& \textbf{Source} 	& \textbf{Category} \\
-	\hline
-	crc32					& MiBench 	& network, telecomm	\\
-	integer matmult			& WCET	 	& automotive	\\
-	cubic root solver		& MiBench 	& automotive	\\
-	2d fir					& WCET 		& automotive, consumer	\\
-	float matmult			& WCET 		& automotive, consumer	\\
-	dijkstra				& MiBench 	& network	\\
-	blowfish				& MiBench 	& security	\\
-	rjindael				& MiBench 	& security	\\
-	sha						& MiBench 	& network, security	\\
-	fdct					& WCET 		& consumer	\\
-	\end{tabular}
-\caption{Benchmarks selected, and the categories they fit into.}
-\label{Table:Benchmarks}
-\end{table}
 
 
 % Briefly discuss what we do
@@ -105,13 +122,43 @@ This paper covers the design and results of the experiment. First previous work 
 
 \section*{Previous work}
 
-Mention not much previous work. Lots of work done on performance, and mostly assumed to carry over. Not much done with real hardware
+% Mention not much previous work. Lots of work done on performance, and mostly assumed to carry over. Not much done with real hardware
+To date there has been very little work extensively exploring the effect different compilers optimizations have on energy consumption. Most studies focus on only a few optimizations in isolation.
 
-Talk a lot about iterative compilation for energy paper. lack of benchmarks, only looks at loop unrolling and tilesize (todo check). The only tests they did were matrix multiplication, vector by matrix multiplication (and one more). Also only one architecture. The energy consumption might be very dependant on the architecture and way the pipeline is structured, so their results may not be applicable to other platforms.
+Many papers discussing energy choose to use the Wattch simulator\cite{Wattch}. TODO talk about wattch, physical measurements better? looking for interesting results, as wattch is just an abstraction they may be missed. only used in one configuration mostly, energy could be very dependent on pipeline.
 
-performance==energy, only tested the overall optimization levels O1-O4 and 4 individual optimizations, simulated with wattch - inherits all the inaccuracies that wattch might have. the 4 individual optimizations are only applied individual, no exploration of the interactions between them is attempted. ar
+% Talk a lot about iterative compilation for energy paper. lack of benchmarks, only looks at loop unrolling and tilesize (todo check).
+%The only tests they did were matrix multiplication, vector by matrix multiplication (and one more).
+%Also only one architecture (wattch).
+%The energy consumption might be very dependant on the architecture and way the pipeline is structured, so their results may not be applicable to other platforms.
+Iterative compilation has been examined as a possibility for choosing optimizations that reduce power by Gheorghita, Corporaal and Basten\cite{IterativeCompilationForEnergy}. In this paper the effect of different loop unrolling and loop tiling parameters on energy consumption was examined for 3 benchmarks - all matrix based benchmarks. The energy consumption was estimated using the Wattch simulator as opposed to taking hardware measurements. They came to the conclusion that iterative compilation was an effective method of decreasing energy consumption as well as improving performance.
+
+% performance==energy, only tested the overall optimization levels O1-O4 and 4 individual optimizations, simulated with wattch - inherits all the inaccuracies that wattch might have. the 4 individual optimizations are only applied individual, no exploration of the interactions between them is attempted. ar
+The topic of performance and energy being highly correlated is addressed in `Is Compiling for Performance == Compiling for Power?'\cite{CompilingForPerformancePower}. This paper explored several different overall optimization levels, as well as four specific optimizations, also using the Wattch simulator to gather energy results. However the specific optimizations were all applied individually on top of \texttt{-O1}, without exploring any possible interactions between the optimizations. The main conclusion drawn from this study was that most optimizations reduce the number of instructions executed, hence reducing energy consumption and execution time together.
+
+% compilation techniques for low energy
+% identified that the following could be used by compilers to reduce energy:
+% 	reordering to reduce switching
+% 	reducing memory accesses
+% 	improving cache hits
+% 	reduce switching on address lines
+% 	improve page hits
+An analysis of what a compiler can do to optimize for energy was carried out by Tiwari, Malik and Wolfe\cite{CompilationTechniquesForLowEnergy}. In this they identified several ways possible techniques that compilers could use to reduce the energy consumption of programs:
+\begin{itemize}
+	\setlength{\itemsep}{0em}
+	\vspace{-1mm}
+
+	\item Reorder instructions to reduce switching.
+	\item Reduce memory accesses
+	\item Improve cache hits
+	\item Reduce switching on address lines
+	\item Improve page hits
+\end{itemize}
+
+It is expected that optimizations which cover some of these points will have an effect on energy. However the majority of these will also improve performance.
 
 what can the poor compiler do - most measurements on gatelevel sim. only one platform
+
 
 \section*{Hardware Setup}
 
