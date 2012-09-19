@@ -74,30 +74,26 @@ astract abtrct absrct astrct abstract stract bstract
 % energy consumption important
 % many hardware features and optimizations (clock gating) to lower power consumption
 % but cant be considered independently, software must be considered too, as it controls the hardware
-Energy consumption is rapidly becoming one of the most important design constraints when writing software for embedded platforms. In the hardware space there have been many innovations for reducing the power consumption of electronic devices. However, due to the software running on top of the hardware platform, the combination of software and hardware must be taken together when exploring energy usage.
+Energy consumption is rapidly becoming one of the most important design constraints when writing software for embedded platforms. In the hardware space there have been many features such as clock gates to reduce the power consumption of electronic devices. However, due to the software running on top of the hardware platform, the combination of software and hardware must be taken together when exploring energy usage. \todo{as has been done in...}
 
 % talk about embedded platforms
 % lots of different architectures
 % each has different energy consumption characteristics
-Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy.
-
 %talk about power, aswell.
 %less spikey power consumption,
 %less overall power consumption = less bulky power supplies
-For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)},
+Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy previous studies have established that the processor takes between 20\% and 40\% of the overall system power \todo{Find a reference for this? is this true?} For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)}.
 
 %GCC Talk compiler optimisations affecting performance.
 %Many people think that this has been done, but no extensive data gathered on.
 %Mention iterative compilation paper: only looked at 2 optimisations for 3 limited test cases. Want to know if faster program=less energy.
 % not many studies with real hardware measurements
-Compiler optimizations have the potential for energy savings with no changes to existing applications - just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option cannot be testing in isolation \todo{(PREVIOUS WORK HAS SHOWN THIS. TODO: FIND SOME)}. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually.
+Compiler optimizations have the potential for energy savings with no changes to existing applications - just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option cannot be tested in isolation \todo{(PREVIOUS WORK HAS SHOWN THIS. TODO: FIND SOME)}. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually.
 
 % hardware
-All the energy measurements in this paper are taken using physical measurement circuitry attached to the processors. This avoids the use of models which could be inaccurate, or modelling synthetic processors with no real world counterpart. By using commonly available platforms and processors along with some more novel architectures, the results are more applicable while still providing insight into how different types of architectures perform. There are five platforms examined in this paper, shown in Table~\ref{Table:Platforms}.
+All the energy measurements in this paper are taken using physical measurement circuitry attached to the processors. This avoids the use of models which could be inaccurate, or modelling synthetic processors with no real world counterpart. By using commonly available platforms and processors along with some more novel architectures, the results are applicable in general while still providing insight into how different types of architectures perform. There are five platforms examined in this paper, shown in Table~\ref{Table:Platforms}.
 
-
-
-In this paper several experiments exploring the optimization passes enabled at different optimization levels are conducted. Each experiment uses the fractional factorial design method to deal with the interacts between optimizations.
+In this paper several experiments exploring the optimization passes enabled at different optimization levels are conducted. Each experiment uses the fractional factorial design method to deal with the interactions between optimizations.
 
 
 %Talk about how different benchmarks are needed, taken from contempory, chosen to be implementable,
@@ -131,7 +127,7 @@ These benchmarks were constructed to run on the `bare metal' - no host OS needed
 	rjindael				& MiBench 	& security	\\
 	sha						& MiBench 	& network, security	\\
 	\end{tabular}
-\caption{Benchmarks selected, and the categories they fit into.}
+\caption{Benchmarks selected, and the categories they fit into. These are selected from MiBench\cite{MiBench} and the Worst Case Execution Time (WCET)\cite{WCET} suites.}
 \label{Table:Benchmarks}
 \end{table}
 
@@ -140,7 +136,7 @@ These benchmarks were constructed to run on the `bare metal' - no host OS needed
 % Using a fractional factorial design the individual optimizations comprising each optimization level in GCC are analysed for their main and two-way interactions.
 % This paper extensively evaluates possible optimizations available in GCC.
 
-This paper covers the design and results of the experiment. First, previous work in this space is discussed, along with the novel contribution this paper makes. After this, the experimental design is discussed, followed by a brief description of the hardware setting. Then, the experiments performed presented with results. Finally, the results are evaluated and the conclusions drawn are presented.
+This paper covers the design and results of the experiment. First, previous work in this space is discussed, along with the novel contribution this paper makes. After this, the approach and a brief discussion of fractional factorial design is listed. Then, the experiments performed presented with results. Finally, the results are evaluated and the conclusions drawn are presented.
 
 \section*{Previous work}
 
@@ -226,6 +222,7 @@ Using the Yates algorithm the effect for any single or combination of factors ca
 
 All FFDs used were generated by R, using the FrF2 library\cite{FrF2}.
 
+
 %Result graph here for better placement
 \begin{figure*}[tb!]
 	\centering
@@ -240,7 +237,7 @@ This section talks about the individual experiments that were run on the hardwar
 
 \subsection*{First Optimization Level (O1)}
 
-An FFD design of resolution 5 was used to evaluate GCC's 37 flags turned on by \texttt{-O1}. This consisted of 2048 different runs, allowing the main factors to be examined. If third order interactions are considered negligible, two way interactions of the flags can be resolved. The experiment aimed to identify which of the flags in this optimization level has the largest \todo{FINISH}
+An FFD design of resolution 5 was used to evaluate GCC's 37 flags turned on by \texttt{-O1}. This consisted of 2048 different runs, allowing the main factors to be examined. If third order interactions are considered negligible, two way interactions of the flags can be resolved. The experiment aimed to identify which of the flags in this optimization level has the largest impact on energy consumption and execution time.
 
 \subsection*{Second Optimization Level (O2)}
 
