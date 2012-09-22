@@ -143,8 +143,12 @@ This paper covers the design and results of the experiment. First, previous work
 % Mention not much previous work. Lots of work done on performance, and mostly assumed to carry over. Not much done with real hardware
 To date there has been very little work extensively exploring the effect that different compilers optimizations have on energy consumption. Most studies focus on only a few optimizations in isolation, and few consider multiple platforms with with different architectural features.
 
+Loop unrolling, inlining and instruction scheduling have been examined extensively for different platforms, using both simulators and hardware measurements\cite{EffectOfCompilerOptimizationsOnPentium4}. \todo{more}
+
 % TODO talk about wattch, physical measurements better? looking for interesting results, as wattch is just an abstraction they may be missed. only used in one configuration mostly, energy could be very dependent on pipeline.
-Many papers \todo{(TODO such as ..MORE)} discussing energy choose to use the Wattch simulator\cite{Wattch}. The accuracy of Wattch is established at being within 10\% of industry layout-level power tool. However, when simulating a program with a single optimization pass turned on, the effects may be small enough to be mistaken for error when using the Wattch framework. Additionally, energy consumption effects may not have been modelled by the simulator, potentially missing interesting effects. \todo{(OTHER SIMULATORS)}
+Many papers \todo{(TODO such as ..MORE)} discussing energy choose to use the Wattch simulator\cite{Wattch}. The accuracy of Wattch is established at being within 10\% of industry layout-level power tool. However, when simulating a program with a single optimization pass turned on, the effects may be small enough to be mistaken for error when using the Wattch framework. Additionally, energy consumption effects may not have been modelled by the simulator, potentially missing interesting effects.
+
+SimplePower\cite{SimplePower} is another simulator that has been used to explore the effects of the software running on a processor. This simulator models a five stage RISC pipeline, with models estimating the energy consumption based on the number of transitions on bus signal lines as well as various other components.
 
 % Talk a lot about iterative compilation for energy paper. lack of benchmarks, only looks at loop unrolling and tilesize (todo check).
 %The only tests they did were matrix multiplication, vector by matrix multiplication (and one more).
@@ -154,7 +158,9 @@ Iterative compilation has been examined as a possibility for choosing optimizati
 
 %However iterative compilation does not account for interactions between the optimization passes which could potentially have N! combinations to explore.
 
-\todo{TODO MILEPOST}
+Fractional factorial design, as a method for exploring the interactions of optimizations was explored in the paper `Feedback-Directed Selection and Characterization of Compiler Optimizations'\cite{IntelPaper}. Nine optimizations were examined, using a fractional factorial technique to isolate the interactions and choose a set of optimizations that gave better performance then just turning all the optimizations on.
+
+The MILEPOST GCC study implemented an alternative to compiling a program many times by using machine learning to guess which optimization flags would best apply to a given program. Features were extracted from the program, which was then matched against previous known results from previous compilations. This allowed a set of optimizations to be estimated from just the source code.
 
 % performance==energy, only tested the overall optimization levels O1-O4 and 4 individual optimizations, simulated with wattch - inherits all the inaccuracies that wattch might have. the 4 individual optimizations are only applied individual, no exploration of the interactions between them is attempted. ar
 The topic of performance and energy being highly correlated is addressed in `Is Compiling for Performance == Compiling for Power?'\cite{CompilingForPerformancePower}. The paper explored several different overall optimization levels, as well as four specific optimizations, also using the Wattch simulator to gather energy results. However the specific optimizations were all applied individually on top of \texttt{-O1}, without exploring any possible interactions between the optimizations. The main conclusion drawn from this study was that most optimizations reduce the number of instructions executed, hence reducing energy consumption and execution time simultaneously.
@@ -278,6 +284,13 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 \section*{Results}
 
 \begin{figure}[tb]
+	\includegraphics[width=\linewidth]{cortex-a8/O3_main_effects_2dfir.png}
+	\caption{The 2dfir benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O3} are listed.}
+	\label{Fig:O3_2dfir_A8}
+\end{figure}
+
+
+\begin{figure}[tb]
 	\includegraphics[width=\linewidth]{cortex-m0/O1_main_effects_blowfish.png}
 	\caption{The blowfish benchmark on the Cortex-M0 platform. Individual options enabled at \texttt{O1} are listed.}
 	\label{Fig:BlowfishMainEffects}
@@ -295,13 +308,27 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 	\label{Fig:FdctO2MainEffects}
 \end{figure}
 
-A high level overview of each platform and benchmark for different optimization levels is given in Figure~\ref{Fig:OverallView}. This figure shows a small line graph for each combination displaying the effect of the broad optimization levels \texttt{O1}, \texttt{O2}, \texttt{O3} on time, energy and power.
+A high level overview of each platform and benchmark for different optimization levels is given in Figure~\ref{Fig:OverallView}. This figure shows a small line graph for each combination displaying the effect of the broad optimization levels \texttt{O1}, \texttt{O2}, \texttt{O3} and \texttt{O4} (\texttt{O3} with link time optimization) on time, energy and power.
 
 The power remains constant for most of the platforms, except for the Cortex-A8. This is likely due to the superscalar nature of the core, and high optimization levels enabling instruction scheduling for multiple instructions to be executed per cycle.
 
 For the cubic benchmark there is a much smaller performance gain from the optimizations than with the other benchmarks. This is due to the main computational body of work being done by the precompiled libraries providing the trigonometric functions.
 
-Another observation is that there is very little divergence between execution time and energy consumption.
+Another observation is that there is very little divergence between execution time and energy consumption. This also manifests as the average power remaining constant across the optimization levels. There is very little divergence in the platforms with `simple' pipelines. For the Cortex-M0, very little difference between energy and time is seen due to it being the simplest processor tested: it has a simple three stage pipeline without forwarding logic. The pipeline never stalls unless it encounters a load, in which case it always stalls. The Cortex-M3 exhibits very similar behavior, with some very slight differences between energy and time. The pipeline in this processor is correspondingly more complex, featuring branch speculation and a larger instruction set.
+
+The XMOS processor has a four stage pipeline. However, as this is a multithreaded processor, one instruction from each thread is sent down the pipeline sequentially \todo{talk about possibilities}.
+
+The Epiphany processor also sees a large correlation between the energy consumption and execution time. There is some divergence for a few of the benchmarks. These are likely when the superscalar core in the processor has been able to dispatch multiple instructions simultaneously.
+
+The greatest difference between energy and time was using the Cortex-A8. For the majority of the benchmarks the execution time reduces more than the energy. This is due to multiple instructions being executed simultaneously by the core, reducing the amount of time taken, but not the energy as the same total work is still being done. The gap is also seen to widen at the \texttt{O2} level, due to instruction scheduling being enabled there. An interesting effect is seen in 2dfir for this processor. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation of this \texttt{O3} enables two options that have a significant effect on the energy (shown in Figure~\ref{O3_2dfir_A8}):
+\begin{itemize}
+	\item \texttt{\bfseries -fgcse-after-reload}. This option enables an extra pass to eliminate redundant loads after spill code has been generated.
+	\item \texttt{\bfseries -ftree-vectorize}.
+\end{itemize}
+
+It should also be noted that the compiler for the XMOS processor uses an LLVM backend for code generation, featuring different optimizations. Due to this the result set for this processor is not as extensive as the other four.
+
+Trends can be seen across platforms with the same benchmark. This suggests that the type of program has a larger impact on the energy than the platform. \todo{compilers synergistic}
 
 \subsection*{Time and Energy}
 
@@ -450,7 +477,7 @@ Talk about error
  - total amonut of energy used is correct, even if sample rate is low
  - FFD
  - cold start problem
- 	only affects beaglebone, as no caches otherwise, but fits in cache anyway
+ 	only affects beaglebone, as no caches otherwise, but most fit in cache anyway
 
 
 Draw correlations between platforms and benchmarks.
@@ -463,6 +490,14 @@ Why did we get these results
 
 
 \section*{Conclusion}
+
+\todo{difficult to predict which optimizations will have an effect}
+
+\todo{many interactions between optimizations means that mostly the structure of the program input has a larger effect than the platform(?). 150 options, but even these consist of multiple passes. over 230 different passes in gcc}
+
+\todo{most of the current optimizations in gcc reduce the total workload of the program. this in turn reduces the energy. if just energy reduction without performance gain is required, other optimizations will have to be implemented. the need for energy specific optimizations}
+
+\todo{unlines the need for iterative compilation and techniques such as milepost}
 
 \section*{Future Work}
 
