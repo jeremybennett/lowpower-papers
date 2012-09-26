@@ -82,7 +82,9 @@ Energy consumption is rapidly becoming one of the most important design constrai
 %talk about power, aswell.
 %less spikey power consumption,
 %less overall power consumption = less bulky power supplies
-Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy previous studies have established that the processor takes between 20\% and 40\% of the overall system power \todo{Find a reference for this? is this true?} For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)}.
+Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy. A previous study characterized the CPU power usage of a mobile phone to be between 10 and 20\% of the total system power\cite{SmartPhonePower}. As the radio consumed roughly 50\% of the power in this system, it can be seen in systems without the GSM component, the processor takes a non-trivial proportion of the power.
+
+ % previous studies have established that the processor takes between 20\% and 40\% of the overall system power \todo{Find a reference for this? is this true?} For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)}.
 
 %GCC Talk compiler optimisations affecting performance.
 %Many people think that this has been done, but no extensive data gathered on.
@@ -238,7 +240,7 @@ After, found out many factors not used, caused more runs needed that necessary.
 %Result graph here for better placement
 \begin{figure*}[tb!]
 	\centering
-	\includegraphics[width=\textwidth,clip, trim=2cm 1.5cm 0 0]{levels.png}
+	\includegraphics[width=\textwidth,clip, trim=2cm 1.5cm 0 0]{levels.pdf}
 	\caption{Energy, Time and Power results for benchmark-platform combinations. Optimization levels \texttt{O0} to \texttt{O3}. \todo{TODO:finish}}
 	\label{Fig:OverallView}
 \end{figure*}
@@ -295,13 +297,21 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 	\label{Fig:O3_2dfir_A8}
 \end{figure}
 
+This section talks about the results from the energy measurements.
+
+\subsection*{Time and Energy}
+
+This study aimed to establish that execution time and energy consumption were highly correlated in the majority of cases. Overall it was found that this was the case, with some small divergences for the Cortex-A8. This section presents the results supporting this conclusion, and discusses some of the cases where there is a difference between energy consumption and execution time.
+
 A high level overview of each platform and benchmark for different optimization levels is given in Figure~\ref{Fig:OverallView}. This figure shows a small line graph for each combination displaying the effect of the broad optimization levels \texttt{O1}, \texttt{O2}, \texttt{O3} and \texttt{O4} (\texttt{O3} with link time optimization) on time, energy and power.
 
-The power remains constant for most of the platforms, except for the Cortex-A8. This is likely due to the superscalar nature of the core, and high optimization levels enabling instruction scheduling for multiple instructions to be executed per cycle.
+% The power remains constant for most of the platforms, except for the Cortex-A8. This is likely due to the superscalar nature of the core, and high optimization levels enabling instruction scheduling for multiple instructions to be executed per cycle.
 
 For the cubic benchmark there is a much smaller performance gain from the optimizations than with the other benchmarks. This is due to the main computational body of work being done by the precompiled libraries providing the trigonometric functions.
 
-Another observation is that there is very little divergence between execution time and energy consumption. This also manifests as the average power remaining constant across the optimization levels. There is very little divergence in the platforms with `simple' pipelines. For the Cortex-M0, very little difference between energy and time is seen due to it being the simplest processor tested: it has a simple three stage pipeline without forwarding logic. The pipeline never stalls unless it encounters a load, in which case it always stalls. The Cortex-M3 exhibits very similar behavior, with some very slight differences between energy and time. The pipeline in this processor is correspondingly more complex, featuring branch speculation and a larger instruction set.
+% Another observation is that there is very little divergence between execution time and energy consumption. This also manifests as the average power remaining constant across the optimization levels.
+
+There is very little divergence in the platforms with `simple' pipelines. For the Cortex-M0, very little difference between energy and time is seen due to it being the simplest processor tested: it has a simple three stage pipeline without forwarding logic. The pipeline never stalls unless it encounters a load, in which case it always stalls. The Cortex-M3 exhibits very similar behavior, with some very slight differences between energy and time. The pipeline in this processor is correspondingly more complex, featuring branch speculation and a larger instruction set.
 
 The XMOS processor has a four stage pipeline. However, as this is a multithreaded processor, one instruction from each thread is sent down the pipeline sequentially \todo{talk about possibilities}. It should also be noted that the compiler for the XMOS processor uses an LLVM backend for code generation, featuring different optimizations. Due to this the result set for this processor is not as extensive as the other four.
 
@@ -313,9 +323,8 @@ The greatest difference between energy and time was using the Cortex-A8. For the
 	\item \texttt{\bfseries -ftree-vectorize}. This option vectorizes loops so that SIMD instructions can be used. \todo{invidiual instruction results. check if NEON unit is lower power than normal multiply}.
 \end{itemize}
 
-Trends can be seen across platforms with the same benchmark. This suggests that the type of program has a larger impact on the energy than the platform, possibly as a result of architectures being designed with compilers in mind and vice-versa.
+% Trends can be seen across platforms with the same benchmark. This suggests that the type of program has a larger impact on the energy than the platform, possibly as a result of architectures being designed with compilers in mind and vice-versa.
 
-\subsection*{Time and Energy}
 
 \begin{figure}[t]
 	\includegraphics[width=\linewidth]{cortex-m0/O1_main_effects_blowfish.png}
@@ -323,11 +332,11 @@ Trends can be seen across platforms with the same benchmark. This suggests that 
 	\label{Fig:BlowfishMainEffects}
 \end{figure}
 
-\begin{figure}[t]
-	\includegraphics[width=\linewidth]{cortex-a8/O2_main_effects_int_matmult.png}
-	\caption{The integer matrix multiplication benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O2} are listed.}
-	\label{Fig:IntMatmultO2MainEffects}
-\end{figure}
+% \begin{figure}[t]
+% 	\includegraphics[width=\linewidth]{cortex-a8/O2_main_effects_int_matmult.png}
+% 	\caption{The integer matrix multiplication benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O2} are listed.}
+% 	\label{Fig:IntMatmultO2MainEffects}
+% \end{figure}
 
 \begin{figure}[t]
 	\includegraphics[width=\linewidth]{cortex-m3/O2_main_effects_fdct.png}
@@ -335,21 +344,17 @@ Trends can be seen across platforms with the same benchmark. This suggests that 
 	\label{Fig:FdctO2MainEffects}
 \end{figure}
 
-The vast majority of optimizations showed a high correlation between decreasing the duration of the benchmark and the energy consumption decreasing. A typical example of this is shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization had on the runtime and energy consumption, as calculated by FFD.
+Some further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}.This shows the main effect each optimization had on the runtime and energy consumption, as calculated by the FFD.
 
-This graph also demonstrates that not all optimizations will reduce the power or energy of the program they are optimizing. The energy is not always modified to the same degree as performance, indicating that there are effects other than just decreasing instruction count.
+% This graph also demonstrates that not all optimizations will reduce the power or energy of the program they are optimizing. The energy is not always modified to the same degree as performance, indicating that there are effects other than just decreasing instruction count.
 
-In Figure~\ref{Fig:IntMatmultO2MainEffects} some of the more advanced options enabled by \texttt{O2} are explored. The compiler flag \texttt{-ftree-pre} is unusual in this case in that it causes a reduction in the energy consumption of the benchmark while not reducing the execution time significantly. This flag enables partial redundancy elimination on trees.
+% In Figure~\ref{Fig:IntMatmultO2MainEffects} some of the more advanced options enabled by \texttt{O2} are explored. The compiler flag \texttt{-ftree-pre} is unusual in this case in that it causes a reduction in the energy consumption of the benchmark while not reducing the execution time significantly. This flag enables partial redundancy elimination on trees.
 
-Figure~\ref{Fig:FdctO2MainEffects} highlights the discrepancy that can occur between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce instruction stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
+Figure~\ref{Fig:FdctO2MainEffects} highlights another discrepancy that occurred between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce instruction stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
 
-% \todo{mostly true.}
-% \todo{some cases when not the case. why is this?}
-% \todo{suggest in some cases, without changing performance you can reduce energy}
-% \todo{talk when arent the same.}
-% \todo{reasons for that}
+% This is small representative set of all the results gathered.
 
-\subsection{Individual Optimizations}
+\subsection{Optimization Chaos}
 
 \begin{figure*}[tb]
 	\includegraphics[width=\linewidth]{cortex-m3/O1_addsub_blowfish.png}
@@ -357,30 +362,36 @@ Figure~\ref{Fig:FdctO2MainEffects} highlights the discrepancy that can occur bet
 	\label{Fig:AddsubO1Blowfish}
 \end{figure*}
 
-In Figure~\ref{Fig:AddsubO1Blowfish} optimizations are switched on or off, and plotted relative to the \texttt{O1} optimization level. The flags in the \texttt{O1} group are individually turned off for the experiment, whereas the flags for \texttt{O2} and higher are turned on. This shows that some flags decrease the energy consumption of the program when turned off individually, as seen at the left of the graph.
+A further conclusion of this study is of the difficulty in predicting the effectiveness of an optimization. It was found that for different benchmarks and platforms it was very difficult to predict what effect an optimization would have: it was discovered that many optimizations had no effect at all (in previous figures~\ref{Fig:BlowfishMainEffects} and~\ref{Fig:FdctO2MainEffects} less than a third of the options have a significant impact). Higher order interactions between the optimizations cause unpredictable effects, where enabling or disabling a particular optimization can completely change the effect of many other subsequent optimization passes.
 
-These flags in particular are interesting because when turned off they decrease the energy consumption while increasing the execution time. This is likely a one-off effect, as the same effect was not seen when averaged across many runs.
+To demonstrate this a small case study was performed, where all combinations of four options were explored. These options were chosen from Figure~\ref{Fig:AddsubO1Blowfish}. This graph shows individual optimizations being turned on and off, using the \texttt{O1} optimization level as a base.
 
-These results were further investigated by exhaustively trying combinations of four optimizations that decreased energy consumption while having small effect on the execution time. The energy figures for this can be seen in Table~\ref{Table:Exhaustive}. The O1 column of this table shows the results when the options were applied on top of the \texttt{O1} optimization level. The O2 column shows the same but on top of the \texttt{O2} optimization level.
+% These results were further investigated by exhaustively trying combinations of four optimizations that decreased energy consumption while having small effect on the execution time.
 
-From the O1 column this it can be seen that there are many interaction effect occurring between the options, as simply turning all of these options off does not decrease the energy (in fact it increases the consumption by 1.81\%). Furthermore, when disabled individually, \texttt{-fguess-branch-probability} and \texttt{-ftree-dominator-opts} decrease the energy by 2.49\% and 1.76\% respectively. However when both enabled, the energy consumption (relative to \texttt{O1}) is only 0.93\% less, worse than each flag individually.
+In this graph several unexpected effects worthy of further investigation were found: the flags on the left of the \texttt{O1} section were found to decrease the energy consumption when disabled, an effect not seen in the FFD results. The energy figures for exhausive exploration can be seen in Table~\ref{Table:Exhaustive}, with the aim being to ascertain whether the effect of this energy reduction would compound with multiple flags. The O1 column of this table shows the results when the options were applied on top of the \texttt{O1} optimization level. The O2 column shows the same but on top of the \texttt{O2} optimization level.
+
+% In Figure~\ref{Fig:AddsubO1Blowfish} optimizations are switched on or off, and plotted relative to the \texttt{O1} optimization level. The flags in the \texttt{O1} group are individually turned off for the experiment, whereas the flags for \texttt{O2} and higher are turned on. This shows that some flags decrease the energy consumption of the program when turned off individually, as seen at the left of the graph.
+
+% These flags in particular are interesting because when turned off they decrease the energy consumption while increasing the execution time. This is likely a one-off effect, as the same effect was not seen when averaged across many runs.
+
+From the O1 column this it can be seen that there are many interactions occurring between the options, as simply turning all of these options off does not decrease the energy (in fact it increases the consumption by 1.81\%). Furthermore, when disabled individually, \texttt{-fguess-branch-probability} and \texttt{-ftree-dominator-opts} decrease the energy by 2.49\% and 1.76\% respectively. However when both enabled, the energy consumption (relative to \texttt{O1}) is only 0.93\% less, worse than each flag individually.
 
 Different results are seen entirely in the O2 column, with options that decreased energy consumption on top of O1 have little or the opposite effect when applied on top of O2.
 
-This unpredictability suggests that these options have many interdependencies that are difficult to predict upfront.
+This unpredictability suggests that these options have many interdependencies that are difficult to predict upfront. It also makes choosing an optimal set of optimizations very challenging.
 
-Towards the right of the \texttt{O1} section, the three flags which make the largest difference when disabled all feature in the top five of the fractional factorial runs. These five flags are listed below:
-\begin{itemize}
-	\setlength{\itemsep}{0em}
-	\vspace{-1mm}
-	\item \texttt{-ftree-forwprop}
-	\item \texttt{-fomit-frame-pointer}
-	\item \texttt{-ftree-ter}
-	\item \texttt{-fguess-branch-probability}
-	\item \texttt{-ftree-loop-optimize}
-\end{itemize}
+% Towards the right of the \texttt{O1} section, the three flags which make the largest difference when disabled all feature in the top five of the fractional factorial runs. These five flags are listed below:
+% \begin{itemize}
+% 	\setlength{\itemsep}{0em}
+% 	\vspace{-1mm}
+% 	\item \texttt{-ftree-forwprop}
+% 	\item \texttt{-fomit-frame-pointer}
+% 	\item \texttt{-ftree-ter}
+% 	\item \texttt{-fguess-branch-probability}
+% 	\item \texttt{-ftree-loop-optimize}
+% \end{itemize}
 
-The flags \texttt{-fomit-frame-pointer} and \texttt{-fguess-branch-probability} do not have the same effect on energy as seen in the FFD tests for this benchmark. This is likely due to the combination of optimizations enabled altering the effect of these flags.
+% The flags \texttt{-fomit-frame-pointer} and \texttt{-fguess-branch-probability} do not have the same effect on energy as seen in the FFD tests for this benchmark. This is likely due to the combination of optimizations enabled altering the effect of these flags.
 
 \begin{table}[tb]
 	\centering
@@ -429,14 +440,13 @@ The flags \texttt{-fomit-frame-pointer} and \texttt{-fguess-branch-probability} 
 % talk about what the results are briefly
 % second and third order interactions
 
-\subsection{Comparison of Platforms}
+\subsection{The Universality of Flags}
 
-Table~\ref{Table:BestFlags} lists the top three optimization flags (where that optimization has a larger average effect than 1\%) for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs.
+An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect, establishing whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs.
 
-It can be seen that in many cases the most effective option is the same across platforms. Furthermore, only 18 \todo{(update when more results taken)} out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
+It can be seen that in many cases a similar set of options is seen for the same benchmark. Furthermore, only 18 \todo{(update when more results taken)} out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
 From this is can be seen that the \texttt{-fomit-frame-pointer} flag is very effective at reducing the energy consumption. This is somewhat expected as this optimization frees up a register that would otherwise be used for the frame pointer where it is not needed. Closely following this option \texttt{-ftree-loop-optimize}.
-
 
 Displaying the results in this way highlights some interesting correlations between platforms. The optimizer has trouble optimizing the crc32 benchmark, with the Cortex-M0 and Cortex-M3 only having one optimization which has any significant effects (\texttt{-fmove-loop-invariants}). The Cortex-A8 also sees this platform having an effect, however this is still secondary to the previous optimization (it had an average of a 1.3\% effect on the energy consumption).
 
