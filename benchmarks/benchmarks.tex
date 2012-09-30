@@ -3,18 +3,24 @@
 \usepackage{graphicx}
 \usepackage{biblatex}
 \usepackage{microtype}
-\usepackage{fullpage}
+\usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+\usepackage{titlesec}
 
-\title{Benchmarks for Energy Measurements on Embedded Platforms}
+\title{\bfseries\fontsize{22}{1}\selectfont Benchmarks for Energy Measurements on Embedded Platforms}
 \author{James Pallister, Simon Hollis, Jeremy Bennett}
+
+\titleformat{\section}{\Large\bfseries\centering\scshape}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\newcommand{\nsection}[1]{\section{\bfseries #1}}
 
 \begin{document}
 \maketitle
-\section*{Abstract}
+\nsection{Abstract}
 
 \textit{ABSTRACT}
 
-\section*{Introduction}
+\nsection{Introduction}
 
 Benchmarking is frequently used to gain an idea of how a system will perform during its general use, when the specific environment cannot be reproduced at design-time. This gives designers feedback on how their system will perform and where its performance is lacking. Typically one benchmark cannot exercise all aspects of a the target, leading to suites of benchmarks of which each tests a combination of areas of the hardware. This separation of benchmarks allows the design to see which parts of the hardware perform the best.
 
@@ -39,7 +45,7 @@ Six different platforms are explored:
 	\item ChipKIT Uno - PIC32MX (MIPS)
 \end{itemize}
 
-\section*{Previous Work}
+\nsection{Previous Work}
 
 TALK ABOUT HOW OUR SUITE COMPARES TO OTHERS
 
@@ -66,13 +72,13 @@ Several other benchmark suites were evaluated. These were:
 
 All of these benchmark suites were found to be unsuitable for the aim of characterising energy consumption on embedded platforms due to their reliance on the operating system and features provided by it.
 
-\section*{Platforms}
+\nsection{Platforms}
 
 A range of platforms has been chosen, covering different types of architectures for different purposes. The processors are mainly small architectures which are designed for low power usage. As a consequence some of the platforms are very memory limited, restricting the types of applications that would be run on them.
 
 TALK ABOUT PLATFORMS IN ABSTRACT, FEATURES DESIRED FROM THEM
 
-\section*{Benchmarks}
+\nsection{Benchmarks}
 
 \begin{table*}
 \centering
@@ -111,7 +117,7 @@ There were four orthoganal aspects to each benchmark that had to be considered:
 	\item Branding frequency
 \end{itemize}
 
-These categories roughly correspond to the types of instructions seen in the instruction traces from MiBench. By using benchmarks that hit different points of these aspects, interesting observations about the enery consumption of the device can be made. 
+These categories roughly correspond to the types of instructions seen in the instruction traces from MiBench. By using benchmarks that hit different points of these aspects, interesting observations about the enery consumption of the device can be made.
 
 The final set of benchmarks is shown in Table~\ref{Benchmarks}.
 
@@ -134,7 +140,7 @@ The final set of benchmarks is shown in Table~\ref{Benchmarks}.
 	\label{BenchmarkLegend}
 \end{table}
 
-\section*{Benchmark Analysis}
+\nsection{Benchmark Descriptions}
 
 This section talks about each benchmarks, giving a short description of the benchmark and why it is included. A breakdown of the types of instructions in the benchmark is given for each platform.
 
@@ -146,14 +152,67 @@ Blowfish is an encryption algorithm commonly used in cryptography. This benchmar
 
 Rijndael is the algorithm for the Advanced Encryption Standard. It is commonly used in many security applications
 
+\subsubsection*{Triple-DES}
+Triple-DES is an older encryption algorithm, similar to blowfish and Rijndael.
+
+\subsubsection*{SHA}
+
+Secure Hashing Algorithm (SHA) is a hashing algorithm commonly used for fingerprinting and verification of data streams. It is useful for stressing integer pipelines, and has low memory requirements.
+
+\subsubsection*{CRC32}
+
+Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions.
+
+\subsubsection*{Primes}
+
+The primes benchmark implements a prime seive. This benchmark is a more contrived example than others, which would be found in real applications more often. However, it is structured differently to the other integer benchmarks, so provides a useful comparison.
+
+\subsubsection*{Integer Matmult}
+
+Integer matrix multiplication is used very frequently in many applications, and so is a useful benchmark to have. It consists of a tight inner loop with many array accesses, making it useful for stressing the memory and integer pipeline at the same time.
+
+\subsubsection*{Float Matmult}
+
+Floating point matrix multiplication is also used frequently. This benchmark is exactly the same as the integer matrix multiplication, but with floating point numbers. This should allow a good metric of relative performance between the integer and floating point pipeline to be produced.
+
+\subsubsection*{Arithmetic Compression}
+
+\subsubsection*{Dijkstra}
+
+This benchmark implements the dijkstra algorithm. This benchmark performs lots of non-linear accesses to memory, and branches unpredictably. This makes it good for stressing caches and branch units that the processor may have. This algorithm is commonly used by routers to calculate the shortest path to another router.
+
+\subsubsection*{Patricia}
+
+This benchmark is similar to dijkstra in structure. It is also used in routers to compress sparse trees.
+
+\subsubsection*{Cubic root solver}
+
+This benchmark performs a large amount of trigonometry to solve various cubic equations. This tests the floating point pipeline with very little memory required.
+
+\subsubsection*{2D FIR}
+
+FIR filters are frequently using in image transformations. In the embedded space this could be the type of operations done by digital cameras. This benchmark is similar to the matrix multiplications but with potentially more memory accesses.
+
+\subsubsection*{FFT}
+
+The FFT is used in many applications requiring frequency analysis of data. This is a standard algorithm often used as a benchmark, which makes it useful to be included in this set. This benchmark should stress the caches, as well as the floating point pipeline due to the butterfly type memory accesses it performs.
+
+\subsubsection*{FDCT}
+
+This benchmark was included as it is a core algorithm behind many video decoders used in consumer products. This benchmark represents real-world usage of the systems as well as testing the floating point pipeline and caches.
+
 
 breakdown of types of sinstruciton per bnehcmark per platform
 
-\section*{Evaluation}
+\nsection{Benchmark Analysis}
+
+A subset of the benchmarks were analysed by collecting their instruction traces as across the different platforms.
+
+\nsection{Evaluation}
 
 With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run
 
-\section*{Conclusion}
+\nsection{Conclusion}
 
 \printbibliography
 
