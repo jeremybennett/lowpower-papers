@@ -22,6 +22,8 @@
 % \usepackage{caption}
 % \usepackage{subcaption}
 
+% \usepackage{fontspec}
+% \setmainfont{Humor Sans}
 
 \bibliography{refs}
 
@@ -260,8 +262,8 @@ For example, if the test shown in Figure~\ref{Fig:BlowfishMainEffects} was rerun
 %Result graph here for better placement
 \begin{figure*}[tb!]
 	\centering
-	\includegraphics[width=\textwidth,clip, trim=2cm 1.5cm 0 2cm]{levels.pdf}
-	\caption{Energy, Time and Power results for benchmark-platform combinations. Optimization levels \texttt{O0} to \texttt{O3}. \todo{TODO:finish}}
+	\includegraphics[width=\textwidth,clip, trim=0cm 0cm 0 2.1cm]{levels.pdf}
+	\caption{Energy, Time and Power results for benchmark-platform combinations. Optimization levels \texttt{O0} to \texttt{O3}.}
 	\label{Fig:OverallView}
 \end{figure*}
 
@@ -298,7 +300,7 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 \nsection{Results}
 
 \begin{figure}[t]
-	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-a8/O3_main_effects_2dfir.png}
+	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-a8/O3_main_effects_2dfir.pdf}
 	\caption{2D FIR benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O3} are listed.}
 	\label{Fig:O3_2dfir_A8}
 \end{figure}
@@ -374,7 +376,7 @@ For the cubic benchmark there is a much smaller performance gain from the optimi
 \subsection{Optimization Chaos}
 
 \begin{figure*}[bt]
-	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 0cm 1.8cm]{cortex-m3/O1_addsub_blowfish.png}
+	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 0cm 1.8cm]{cortex-m3/O1_addsub_blowfish.pdf}
 	\caption{Blowfish benchmark on the Cortex-M3 platform. Individual options are enabled or disabled on top of the \texttt{O1} optimization level.}
 	\label{Fig:AddsubO1Blowfish}
 \end{figure*}
@@ -457,16 +459,17 @@ As mentioned in previous sections, similar options are seen to affect the energy
 	\begin{tabular}{l >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c }
 		\bfseries Benchmark&\rmfamily\bfseries Cortex-M0&\rmfamily\bfseries Cortex-M3 & \rmfamily\bfseries Cortex-A8		& \rmfamily\bfseries Epiphany\\
 		\hline
-		2dfir          & B & O, L, F & R, L, J & \\
-		blowfish       & E, H, B & H, E, L & P, E, B & A, C, F\\
-		crc32          & D & D & D, L & \\
-		cubic          & G, I & G, I & G & \\
-		dijkstra       & I, G, E & D, I, G & D, I, G & \\
-		fdct           & H, L, A & H, L, P & Q, P, H & G, F, A\\
-		float\_matmult & J, B & J, B, L & R, N & \\
-		int\_matmult   & J, B, E & J, N, D & N, R, Q & \\
-		rijndael       & N/A & E, J, K & P, E, M & \\
-		sha            & E, J, B & J, E, D & J, E, Q & \\
+		2dfir          & C & Q, N, G & T, N, K & G, H, B\\
+		blowfish       & F, I, C & I, F, N & R, F, C & B, D, G\\
+		crc32          & E & E & E, N & \\
+		cubic          & H, J & H, J & H & H, J, A\\
+		dijkstra       & J, H, F & E, J, H & E, J, H & \\
+		fdct           & I, N, B & I, N, R & S, R, I & H, G, B\\
+		float\_matmult & K, C & K, C, N & T, P & B, G, H\\
+		int\_matmult   & K, C, F & K, P, E & P, T, S & H, G, B\\
+		rijndael       &  & F, K, M & R, F, O & \\
+		sha            & F, K, C & K, F, E & K, F, S & B, K, L\\
+
 
 	\end{tabular} \\[1em]
 
@@ -476,25 +479,28 @@ As mentioned in previous sections, similar options are seen to affect the energy
 	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} \\
 	\hline
 	\fontsize{9}{1}\selectfont
-	A & 3 & -fdce &
-	B & 7 & -fguess-branch-probability &
-	C & 1 & -fipa-profile \\
-	D & 7 & -fmove-loop-invariants &
-	E & 10 & -fomit-frame-pointer &
-	F & 3 & -ftree-ch \\
-	G & 7 & -ftree-dominator-opts &
-	H & 5 & -ftree-forwprop &
-	I & 5 & -ftree-fre \\
-	J & 9 & -ftree-loop-optimize &
-	K & 1 & -ftree-sra &
-	L & 7 & -ftree-ter \\
-	M & 1 & -fgcse &
-	N & 3 & -finline-small-functions &
-	O & 1 & -fpeephole2 \\
-	P & 4 & -fschedule-insns &
-	Q & 3 & -fschedule-insns2  &
-	R & 3 & -ftree-pre \\
-	&&&\\
+	A & 1 & -fcombine-stack-adjustments &
+	B & 7 & -fdce &
+	C & 7 & -fguess-branch-probability \\
+	D & 1 & -fipa-profile &
+	E & 7 & -fmove-loop-invariants &
+	F & 10 & -fomit-frame-pointer \\
+	G & 6 & -ftree-ch &
+	H & 11 & -ftree-dominator-opts &
+	I & 5 & -ftree-forwprop \\
+	J & 6 & -ftree-fre &
+	K & 10 & -ftree-loop-optimize &
+	L & 1 & -ftree-pta \\
+	M & 1 & -ftree-sra &
+	N & 7 & -ftree-ter &
+	O & 1 & -fgcse \\
+	P & 3 & -finline-small-functions &
+	Q & 1 & -fpeephole2 &
+	R & 4 & -fschedule-insns \\
+	S & 3 & -fschedule-insns2  &
+	T & 3 & -ftree-pre &
+
+	&&\\
 	\end{tabular}
 
 	\caption{Table showing the most effective option for each platform-benchmark combination. Options considered were
@@ -593,7 +599,7 @@ It is very difficult to predict which optimizations will have an effect, whether
 
 \nsection{Acknowledgements}
 
-This work has been supported by funding from Embecosm\cite{Embecosm}.
+This work has been supported by funding from Embecosm\cite{Embecosm}. Development hardware provided by Adapteva\cite{Adapteva}.
 
 \printbibliography
 
