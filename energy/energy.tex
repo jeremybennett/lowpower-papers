@@ -84,7 +84,7 @@ Energy consumption is rapidly becoming one of the most important design constrai
 %talk about power, aswell.
 %less spikey power consumption,
 %less overall power consumption = less bulky power supplies
-Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy. A previous study characterized the CPU power usage of a mobile phone to be between 10 and 20\% of the total system power\cite{SmartPhonePower}. As the radio consumes roughly 50\% of the power in this system, it can be seen in systems without the GSM component, the processor takes a non-trivial proportion of the power.
+Optimizing for low energy consumption is particularly important for embedded systems, where battery life is affected by the efficiency of the software. In these systems the processor is but one of the components consuming energy. A previous study charatcerized the CPU power usage of a mobile phone to be between 10 and 20\% of the total system power\cite{SmartPhonePower}. As the radio consumes roughly 50\% of the power in this system, it can be seen in systems without the GSM component, the processor takes a non-trivial proportion of the power.
 
  % previous studies have established that the processor takes between 20\% and 40\% of the overall system power \todo{Find a reference for this? is this true?} For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)}.
 
@@ -375,6 +375,8 @@ For the cubic benchmark there is a much smaller performance gain from the optimi
 
 \subsection{Optimization Chaos}
 
+\todo{TODO: Why are there interactions between flags. Why arent the interactions predictable.}
+
 \begin{figure*}[bt]
 	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 0cm 1.8cm]{cortex-m3/O1_addsub_blowfish.pdf}
 	\caption{Blowfish benchmark on the Cortex-M3 platform. Individual options are enabled or disabled on top of the \texttt{O1} optimization level.}
@@ -444,9 +446,11 @@ This unpredictability suggests that these options have many interdependencies th
 
 \subsection{The Universality of Flags}
 
+\todo{tie in with previous section about difficult of choosing options, variation seen on platforms. Possibly instruction set having a larger difference than architecture?}
+
 An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs.
 
-It can be seen that in many cases a similar set of options is seen for the same benchmark. Furthermore, only 18 \todo{(update when more results taken)} out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
+It can be seen that in many cases a similar set of options is seen for the same benchmark. Furthermore, only 20 out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
 From this is can be seen that the \texttt{-fomit-frame-pointer} flag is very effective at reducing the energy consumption. This is somewhat expected as this optimization frees up a register that would otherwise be used for the frame pointer where it is not needed. Closely following this option \texttt{-ftree-loop-optimize}.
 
@@ -454,21 +458,23 @@ Displaying the results in this way highlights some interesting correlations betw
 
 As mentioned in previous sections, similar options are seen to affect the energy consumption across benchmarks. This is due to the optimizations being targeted to specific high level language constructs, which only appear in some of the benchmarks.
 
+\todo{Add long conclusions. why doesnt help with universality.}
+
 \begin{table*}
 	\centering
 	\begin{tabular}{l >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c }
 		\bfseries Benchmark&\rmfamily\bfseries Cortex-M0&\rmfamily\bfseries Cortex-M3 & \rmfamily\bfseries Cortex-A8		& \rmfamily\bfseries Epiphany\\
 		\hline
-		2dfir          & C & Q, N, G & T, N, K & G, H, B\\
-		blowfish       & F, I, C & I, F, N & R, F, C & B, D, G\\
-		crc32          & E & E & E, N & \\
-		cubic          & H, J & H, J & H & H, J, A\\
-		dijkstra       & J, H, F & E, J, H & E, J, H & \\
-		fdct           & I, N, B & I, N, R & S, R, I & H, G, B\\
-		float\_matmult & K, C & K, C, N & T, P & B, G, H\\
-		int\_matmult   & K, C, F & K, P, E & P, T, S & H, G, B\\
-		rijndael       &  & F, K, M & R, F, O & \\
-		sha            & F, K, C & K, F, E & K, F, S & B, K, L\\
+		2dfir          & E & T, G, H & N, G, C & H, A, D\\
+		blowfish       & B, J, E & J, B, G & K, B, E & D, P, H\\
+		crc32          & F & F & F, G & \\
+		cubic          & A, I & A, I & A & A, I, O\\
+		dijkstra       & I, A, B & F, I, A & F, I, A & \\
+		fdct           & J, G, D & J, G, K & M, K, J & A, H, D\\
+		float\_matmult & C, E & C, E, G & N, L & D, H, A\\
+		int\_matmult   & C, E, B & C, L, F & L, N, M & A, H, D\\
+		rijndael       &  & B, C, R & K, B, S & \\
+		sha            & B, C, E & C, B, F & C, B, M & D, C, Q\\
 
 
 	\end{tabular} \\[1em]
@@ -479,26 +485,26 @@ As mentioned in previous sections, similar options are seen to affect the energy
 	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} \\
 	\hline
 	\fontsize{9}{1}\selectfont
-	A & 1 & -fcombine-stack-adjustments &
-	B & 7 & -fdce &
-	C & 7 & -fguess-branch-probability \\
-	D & 1 & -fipa-profile &
-	E & 7 & -fmove-loop-invariants &
-	F & 10 & -fomit-frame-pointer \\
-	G & 6 & -ftree-ch &
-	H & 11 & -ftree-dominator-opts &
-	I & 5 & -ftree-forwprop \\
-	J & 6 & -ftree-fre &
-	K & 10 & -ftree-loop-optimize &
-	L & 1 & -ftree-pta \\
-	M & 1 & -ftree-sra &
-	N & 7 & -ftree-ter &
-	O & 1 & -fgcse \\
-	P & 3 & -finline-small-functions &
-	Q & 1 & -fpeephole2 &
-	R & 4 & -fschedule-insns \\
-	S & 3 & -fschedule-insns2  &
-	T & 3 & -ftree-pre &
+	A & 11 & -ftree-dominator-opts &
+	B & 10 & -fomit-frame-pointer &
+	C & 10 & -ftree-loop-optimize \\
+	D & 7  & -fdce &
+	E & 7  & -fguess-branch-probability &
+	F & 7  & -fmove-loop-invariants \\
+	G & 7  & -ftree-ter &
+	H & 6  & -ftree-ch &
+	I & 6  & -ftree-fre \\
+	J & 5  & -ftree-forwprop &
+	K & 4  & -fschedule-insns &
+	L & 3  & -finline-small-functions \\
+	M & 3  & -fschedule-insns2 &
+	N & 3  & -ftree-pre &
+	O & 1  & -fcombine-stack-adjustments \\
+	P & 1  & -fipa-profile &
+	Q & 1  & -ftree-pta &
+	R & 1  & -ftree-sra \\
+	S & 1  & -fgcse  &
+	T & 1  & -fpeephole2 &
 
 	&&\\
 	\end{tabular}

@@ -5,13 +5,14 @@
 \usepackage{microtype}
 \usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
 \usepackage{titlesec}
+\usepackage{color}
 
 % \usepackage{fontspec}
 % \setmainfont{Humor Sans}
 
 \graphicspath{{./images/}}
 
-\title{\bfseries\fontsize{22}{1}\selectfont Benchmarks for Energy Measurements on Embedded Platforms}
+\title{\bfseries\fontsize{22}{1}\selectfont Open Benchmarks for Energy Measurements on Embedded Platforms}
 \author{James Pallister, Simon Hollis, Jeremy Bennett}
 
 \bibliography{refs}
@@ -19,18 +20,19 @@
 \titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
 
 \newcommand{\nsection}[1]{\section{\bfseries #1}}
+\newcommand{\todo}[1]{\textbf{\textcolor{red}{#1}}}
 
 \begin{document}
 \maketitle
 \nsection{Abstract}
 
-\textbf{This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. This is the abstract. }
+\textbf{This paper presents and justifies a benchmark suite targetted at embedded processors for evaluating energy consumption. The possibly sources of energy consumption are considered and individual benchmarks selected from contemporary suites to cover key points affecting the energy consumption. The benchmark suite is portable, with six platforms considered. A subset of the platforms and benchmarks are extensively evaluated with instruction traces gathered and their instruction distributions analysed.}
 
 \nsection{Introduction}
 
 Benchmarking is frequently used to gain an idea of how a system will perform during its general use, when the specific environment cannot be reproduced at design-time. This gives designers feedback on how their system will perform and where its performance is lacking. Typically one benchmark cannot exercise all aspects of a the target, leading to suites of benchmarks of which each tests a combination of areas of the hardware. This separation of benchmarks allows the design to see which parts of the hardware perform the best.
 
-The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. An embedded system will typically have severe power restraints placed upon it, if it is to have a long battery life. To recognise whether these constraints have been met, the power consumption of the device MiBench established a well known set of benchmarks must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, as well as exposing compiler effects.
+The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. An portable embedded system will typically have severe power restraints placed upon it, if it is to have a long battery life. To recognise whether these constraints have been met, the power consumption of the device MiBench established a well known set of benchmarks must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, as well as exposing compiler-driven optimization potential.
 
 \begin{table*}[th!]
 \centering
@@ -58,9 +60,9 @@ The energy consumption of our electronic devices is rapidly becoming a large fac
 \end{table*}
 
 
-Many sets of benchmarks exists already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks - while in theory are portable - have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
+Many benchmark suites exist already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks - while in theory are portable - have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
 
-Currently a good benchmark suite for measuring energy consumption is not available for embedded platforms. MiBench is the closest but assumes there is a host operating system for the majority of the benchmarks. In particular it requires access to a filesystem which is usually unavailable on small embedded platforms
+Currently a good benchmark suite for measuring energy consumption is not available for embedded platforms. MiBench is the closest but assumes there is a host operating system for the majority of the benchmarks. In particular it requires access to a filesystem which is usually unavailable on small embedded platforms.
 
 In this paper a set of benchmarks, chosen from popular benchmark suites is presented, along with justification for their use in benchmarking energy consumption. The selection was designed such that they benchmarks would be cross platform, exercising aspects of the processor and memory system. The benchmarks are intended to be run on the ‘bare metal’ with no host operating system.
 
@@ -72,7 +74,7 @@ We consider four orthogonal aspects that the benchmark suite must cover, allowin
 	\item Floating point vs integer operations
 	\item Memory access intensity
 	\item Multithreaded-ness
-	\item Branding frequency
+	\item Branching frequency
 \end{itemize}
 
 Using benchmarks that hit combinations of these, interesting observations about the enery consumption of the device can be made.
@@ -166,21 +168,30 @@ Table~\ref{Table:Platforms} summarises the platforms selected to represent combi
 
 \nsection{Benchmarks}
 
-A set of benchmark to to tests all aspects of the target platforms has been found. Individual tests from several different benchmark suites were considered. In particular MiBench had a large amount of well defined benchmarks, however a large proportion of these were targeted at much higher end platforms than chosen. This lead to a small subset of the MiBench benchmarks being selected. Several benchmarks were sourced from the WCET set. These tested small applications which could conceivably be ran by the platforms discussed earlier.
-
-MiBench divides the embedded processor applications into six categories: automotive, network, consumer, security, telecomms and office. The benchmarks selected broadly fit into these categories, however consumer and office in particular require the higher end embedded processors. This is due to the benchmarks running `off the shelf' programs such as ghostscript and rsynth.
-
-The benchmarks were selected by defining a coverage matrix which included all the benchmarks from following suites:
+A set of benchmark to to tests all aspects of the target platforms has been devised. The benchmarks were selected by defining a coverage matrix which included all the benchmarks from following suites:
 \begin{itemize}
-	\item
+	\setlength{\itemsep}{-0.35em}
+	\item MiBench
+	\item DSPstone
+	\item WCET
+	\item Livermore Fortan Kernels
+	\item Dhrystone/Whetstone
+	\item MediaBench
 \end{itemize}
 
 This matrix evaluated each benchmark for various qualities, such as expected instruction distribtion, types of operations performed, licensing, program length and portability. The final set of benchmarks was chosen from this list so that it was a minimal set covering the range of different instruction distributions. This set is shown in Table~\ref{Table:BenchmarkTable}, along with the amount of each instruction category considered.
 
+Individual tests from several different benchmark suites were considered. In particular MiBench had 37 well defined benchmarks, however a large proportion of these were targeted at much higher end platforms than chosen. This lead to a small subset of the MiBench benchmarks being selected. Several benchmarks were sourced from the WCET set. These tested small applications which could conceivably be ran by the platforms discussed earlier.
+
+All but two benchmarks come from these two suites. The remaining two were found from other GPL-licensed applications to fill gaps in the suite. Arithmetic compression was chosen because compression algorithms are often included in benchmark suites (as it is a common operation that a system will perform) and it is an unusal type of compression. Triple-DES was chosen as another encryption algorithm to complement Rijndael and Blowfish.
+
+MiBench divides the embedded processor applications into six categories: automotive, network, consumer, security, telecomms and office. The benchmarks selected broadly fit into these categories, however consumer and office in particular require the higher end embedded processors. This is due to the benchmarks running `off the shelf' programs such as ghostscript and rsynth.
+
+\todo{why dont we use anything from the other benchmark sets}
 
 \nsection{Benchmark Descriptions}
 
-This section talks about each benchmarks, giving a short description of the benchmark and why it is included. A breakdown of the types of instructions in the benchmark is given for each platform.
+This section talks about each benchmark, giving a short description of the benchmark and why it is included. A breakdown of the types of instructions in the benchmark is given for each platform.
 
 \subsection*{Categories}
 
@@ -200,11 +211,11 @@ The benchmarks are divided into several categories, broadly covering the areas w
 
 \vspace{3mm}
 \textbf{Blowfish}\\
-Blowfish is an encryption algorithm commonly used in cryptography. This benchmark was taken from MiBench but modified to encrypt small blocks of data. Encryption typically involves many integer operations with fewer branches.
+Blowfish is an encryption algorithm commonly used in cryptography. This benchmark was taken from MiBench but modified to encrypt small blocks of data, as if the data was being streamed into the processor. Encryption typically involves many integer operations with fewer, predictable branches.
 
 \vspace{3mm}
 \textbf{Rijndael}\\
-Rijndael is the algorithm for the Advanced Encryption Standard. It is commonly used in many security applications
+Rijndael is the algorithm for the Advanced Encryption Standard. It is commonly used in many security applications, and has a similar structure to blowfish.
 
 \vspace{3mm}
 \textbf{Triple-DES}\\
@@ -216,7 +227,7 @@ Secure Hashing Algorithm (SHA) is a hashing algorithm commonly used for fingerpr
 
 \vspace{3mm}
 \textbf{CRC32}\\
-Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions.
+Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions as it consists mainly of shifts and XORs.
 
 \begin{figure}[t]
 	\includegraphics[width=\linewidth,clip, trim=0 8.5in 2in 0]{epiphany.pdf}
@@ -242,7 +253,7 @@ The primes benchmark implements a prime seive. This benchmark is a more contrive
 
 \vspace{3mm}
 \textbf{Integer Matmult}\\
-Integer matrix multiplication is used very frequently in many applications, and so is a useful benchmark to have. It consists of a tight inner loop with many array accesses, making it useful for stressing the memory and integer pipeline at the same time.
+Integer matrix multiplication is used very frequently in many applications, and so is a useful benchmark to have. It consists of a tight inner loop with many array accesses, making it useful for stressing the memory and integer pipeline at the same time. This should also expose data caching effects of the platform.
 
 \vspace{3mm}
 \textbf{Float Matmult}\\
@@ -254,11 +265,11 @@ Arithmetic compression is an entropy encoding that can be used to compress data.
 
 \vspace{3mm}
 \textbf{Dijkstra}\\
-This benchmark implements the dijkstra algorithm. This benchmark performs lots of non-linear accesses to memory, and branches unpredictably. This makes it good for stressing caches and branch units that the processor may have. This algorithm is commonly used by routers to calculate the shortest path to another router.
+This benchmark implements the dijkstra shortest-algorithm path. This benchmark performs lots of non-linear accesses to memory, and branches unpredictably. This makes it good for stressing caches and branch units that the processor may have. This algorithm is commonly used by routers to calculate the shortest path to another router.
 
 \vspace{3mm}
 \textbf{Patricia}\\
-This benchmark is similar to dijkstra in structure. It is also used in routers to compress sparse trees.
+This benchmark is similar to dijkstra in structure. It is also used in routers to compress sparse trees. Patricia performs less computation, but stores more complicated data structures in memory, possibly exercising the data caching abilities.
 
 \vspace{3mm}
 \textbf{Cubic root solver}\\
@@ -279,8 +290,13 @@ This benchmark was included as it is a core algorithm behind many video decoders
 
 \nsection{Benchmark Analysis}
 
-A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categories to ensure that each benchmark performed a different distribution of operations. Figures~\ref{InstructionDistributionEpiphany}, \ref{InstructionDistributionXMOS} and \ref{InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 platforms respectively.
+A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categories to ensure that each benchmark performed a different distribution of operations. Figures~\ref{InstructionDistributionEpiphany}, \ref{InstructionDistributionXMOS} and \ref{InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
 
+Integer operations are the most common type of instruction in almost every benchmark. Across the platforms, the distributions are similar, with small variations due to the underlying instruction set. For example, there are a larger percentage of MOV-type instructions in the Epiphany results because there are several predicated MOV instructions (MOVEQ, MOVLT, etc). This reduces the need for conditional branches, so this category decreases in proportion.
+
+\todo{Paragraph comparing ARM traces when we finally have that working. Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.}
+
+\todo{Paragraph summarising instruction trace results. Say why these results make it an awesome benchmark suite? todo awesomeness, todo arm Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.}
 
 \nsection{Evaluation}
 
