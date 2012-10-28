@@ -59,6 +59,7 @@ The energy consumption of our electronic devices is rapidly becoming a large fac
 \label{Table:BenchmarkTable}
 \end{table*}
 
+\todo{update table to correspond with trace results}
 
 Many benchmark suites exist already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks - while in theory are portable - have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
 
@@ -229,24 +230,6 @@ Secure Hashing Algorithm (SHA) is a hashing algorithm commonly used for fingerpr
 \textbf{CRC32}\\
 Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions as it consists mainly of shifts and XORs.
 
-\begin{figure}[t]
-	\includegraphics[width=\linewidth,clip, trim=0 8.5in 2in 0]{epiphany.pdf}
-	\caption{Instruction distribution for the Epiphany platform.}
-	\label{Fig:InstructionDistributionEpiphany}
-\end{figure}
-
-\begin{figure}[t]
-	\includegraphics[width=\linewidth,clip, trim=0 8.5in 2in 0]{xmos.pdf}
-	\caption{Instruction distribution for the XMOS platform.}
-	\label{Fig:InstructionDistributionXMOS}
-\end{figure}
-
-\begin{figure}[t]
-	\includegraphics[width=\linewidth,clip, trim=0 8.5in 2in 0]{xmos.pdf}
-	\caption{Instruction distribution for the ARM Cortex-M0 platform.}
-	\label{Fig:InstructionDistributionARM}
-\end{figure}
-
 \vspace{3mm}
 \textbf{Primes}\\
 The primes benchmark implements a prime seive. This benchmark is a more contrived example than others, which would be found in real applications more often. However, it is structured differently to the other integer benchmarks, so provides a useful comparison.
@@ -287,22 +270,58 @@ The FFT is used in many applications requiring frequency analysis of data. This 
 \textbf{FDCT}\\
 This benchmark was included as it is a core algorithm behind many video decoders used in consumer products. This benchmark represents real-world usage of the systems as well as testing the floating point pipeline and caches.
 
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{epiphany.pdf}
+	\caption{Instruction distribution for the Epiphany platform.}
+	\label{Fig:InstructionDistributionEpiphany}
+\end{figure}
+
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{xmos.pdf}
+	\caption{Instruction distribution for the XMOS platform.}
+	\label{Fig:InstructionDistributionXMOS}
+\end{figure}
+
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{arm.pdf}
+	\caption{Instruction distribution for the ARM Cortex-M0 platform.}
+	\label{Fig:InstructionDistributionARM}
+\end{figure}
+sudo
 
 \nsection{Benchmark Analysis}
 
-A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categories to ensure that each benchmark performed a different distribution of operations. Figures~\ref{InstructionDistributionEpiphany}, \ref{InstructionDistributionXMOS} and \ref{InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
+A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categories to ensure that each benchmark performed a different distribution of operations. Figures~\ref{Fig:InstructionDistributionEpiphany}, \ref{Fig:InstructionDistributionXMOS} and \ref{Fig:InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 (Thumb instruction set) platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
 
-Integer operations are the most common type of instruction in almost every benchmark. Across the platforms, the distributions are similar, with small variations due to the underlying instruction set. For example, there are a larger percentage of MOV-type instructions in the Epiphany results because there are several predicated MOV instructions (MOVEQ, MOVLT, etc). This reduces the need for conditional branches, so this category decreases in proportion.
+Integer operations are the most common type of instruction in almost every benchmark. Across the platforms, the distributions are similar, with small variations due to the underlying instruction set. For example, there are a larger percentage of \texttt{mov}-type instructions in the Epiphany results because there are several predicated \texttt{mov} instructions (\texttt{moveq}, \texttt{movlt}, etc). This reduces the need for conditional branches, so this category decreases in proportion.
 
-\todo{Paragraph comparing ARM traces when we finally have that working. Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.}
+The ARM traces follow the same general trend as the traces for XMOS and Epiphany, however with overall less memory operations. This is due to the ARM processor having support for the \texttt{ldm} and \texttt{stm} instruction allowing multiple accesses to memory in a single instruction.
+\todo{Some more discussion about the traces}
 
-\todo{Paragraph summarising instruction trace results. Say why these results make it an awesome benchmark suite? todo awesomeness, todo arm Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm,  Todo some more, todo some arm.}
+The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations. The individual instructions in each category is listed below.
+
+\todo{is this useful? perhaps not.}
+
+\begin{center}
+	\begin{tabular}{l l l l}
+		Category 	& Epiphany  & XMOS 	& ARM \\
+		\hline
+		Integer	 	& 27	  	& 23	& 22  \\
+		Float		& 4			& 0		& 0	  \\
+		Memory		& 8			& 7		& 11  \\
+		Branch		& 23		& 7		& 16  \\
+	\end{tabular}
+\end{center}
+
+\todo{Summarise the results. why do these results make it a good benchmark suite - varied distribution, similarities across platforms but differences to (as you would expect, with different hardware). Talk about how the hardware contributes to the difference in the results}
 
 \nsection{Evaluation}
 
-With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run
+\todo{With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run?}
 
 \nsection{Conclusion}
+
+This paper has presented a benchmark suite that has been designed to expose the energy consumption characteristics of the target platform. We tested it on three separate platforms allowing the orthongality of the benchmark's profiles to be examined. The benchmarks were found to have widely varying behavior making them ideal for their purpose. \todo{}
 
 \printbibliography
 
