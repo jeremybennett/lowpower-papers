@@ -26,46 +26,47 @@
 \maketitle
 \nsection{Abstract}
 
-\textbf{This paper presents and justifies a benchmark suite targetted at embedded processors for evaluating energy consumption. The possibly sources of energy consumption are considered and individual benchmarks selected from contemporary suites to cover key points affecting the energy consumption. The benchmark suite is portable, with six platforms considered. A subset of the platforms and benchmarks are extensively evaluated with instruction traces gathered and their instruction distributions analysed.}
+\textbf{This paper presents and justifies a benchmark suite targeted at embedded processors for evaluating energy consumption. The possible sources of energy consumption are considered and individual benchmarks selected from contemporary suites to cover key points affecting the energy consumption. The benchmark suite is portable, with six platforms considered. A subset of the platforms and benchmarks are extensively evaluated with instruction traces gathered and their instruction distributions analysed.}
 
 \nsection{Introduction}
 
-Benchmarking is frequently used to gain an idea of how a system will perform during its general use, when the specific environment cannot be reproduced at design-time. This gives designers feedback on how their system will perform and where its performance is lacking. Typically one benchmark cannot exercise all aspects of a the target, leading to suites of benchmarks of which each tests a combination of areas of the hardware. This separation of benchmarks allows the design to see which parts of the hardware perform the best.
+Benchmarking is frequently used to gain an idea of how a system will perform during its general use, when the specific environment cannot be reproduced at design-time. This gives designers feedback on how their system will perform and where its performance is lacking. Typically one benchmark cannot exercise all aspects of a target, leading to suites of benchmarks. Each benchmark tests a combination of areas of the hardware. This separation of benchmarks allows the design to see which parts of the hardware perform the best.
 
-The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. An portable embedded system will typically have severe power restraints placed upon it, if it is to have a long battery life. To recognise whether these constraints have been met, the power consumption of the device MiBench established a well known set of benchmarks must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, as well as exposing compiler-driven optimization potential.
+The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. A portable embedded system will typically have severe power constraints placed upon it, if it is to have a long battery life. To recognise whether these constraints have been met, the power consumption of the device under a typical load must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, ensuring that the system is fit for purpose.
 
 \begin{table*}[th!]
 \centering
 	\begin{tabular}{l c c c c c c c l}
 	Name				 	& Source 	& B & M & I & FP& T 		& License & Category \\
 	\hline
-	CRC32					& MiBench 	& L & L & H & L & Single 	& GPL	& network, telecomm	\\
-	Primes					& WCET 		& M & L & H & L & Multi 	& None	& automotive	\\
-	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
-	Cubic root solver		& MiBench 	& L & L & L & H & Single 	& GPL	& automotive	\\
-	2D FIR					& WCET 		& M & H & L & H & Single 	& None	& automotive, consumer	\\
-	Float Matmult			& WCET 		& M & M & L & H & Single 	& GPL	& automotive, consumer	\\
 	Arithmetic Compression	&			& M & M & L & M & Single 	& GPL	& consumer, telecomm	\\
-	Dijkstra				& MiBench 	& H & M & M & L & Multi 	& GPL	& network	\\
-	Patricia				& MiBench 	& H & H & L & L & Multi 	& GPL	& network	\\
-	Blowfish				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	Rjindael				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	Triple-DES				&		 	& L & M & H & L & Multi 	& GPL	& security	\\
-	SHA						& MiBench 	& L & L & H & L & Multi 	& GPL	& network, security	\\
 	FFT						& MiBench 	& M & H & L & H & Multi?	&  GPL	& automotive, telecomm	\\
+	Patricia				& MiBench 	& H & H & L & L & Multi 	& GPL	& network	\\
+	Primes					& WCET 		& M & L & H & L & Multi 	& None	& automotive	\\
+	Triple-DES				&		 	& L & M & H & L & Multi 	& GPL	& security	\\
+	\hline
+	CRC32					& MiBench 	& L & L & H & L & Single 	& GPL	& network, telecomm	\\
+	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
+	Blowfish				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
+	Cubic root solver		& MiBench 	& L & L & L & H & Single 	& GPL	& automotive	\\
+	Dijkstra				& MiBench 	& H & M & M & L & Multi 	& GPL	& network	\\
 	FDCT					& WCET 		& M & H & H & L & Single 	& None	& consumer	\\
+	Float Matmult			& WCET 		& M & M & L & H & Single 	& GPL	& automotive, consumer	\\
+	Rjindael				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
+	SHA						& MiBench 	& L & L & H & L & Multi 	& GPL	& network, security	\\
+	2D FIR					& WCET 		& M & H & L & H & Single 	& None	& automotive, consumer	\\
 	\end{tabular}
-\caption{Benchmarks selected, and the categories they fit in. Legend in Table~\ref{BenchmarkLegend}}
+\caption{Benchmarks selected, and the categories they fit in. Benchmarks after the partition are examined in more detail. Legend in Table~\ref{BenchmarkLegend}.}
 \label{Table:BenchmarkTable}
 \end{table*}
 
 \todo{update table to correspond with trace results}
 
-Many benchmark suites exist already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks - while in theory are portable - have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
+Many benchmark suites exist already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. This is due to their emphasis on measuring performance, as opposed to energy efficiency. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks --- while in theory are portable --- have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
 
-Currently a good benchmark suite for measuring energy consumption is not available for embedded platforms. MiBench is the closest but assumes there is a host operating system for the majority of the benchmarks. In particular it requires access to a filesystem which is usually unavailable on small embedded platforms.
+Currently a good benchmark suite for measuring energy consumption is not available for embedded platforms. MiBench is the closest in terms of variety of benchmarks and applicability but assumes there is a host operating system for the majority of the benchmarks. In particular it requires access to a filesystem which is usually unavailable on small embedded platforms.
 
-In this paper a set of benchmarks, chosen from popular benchmark suites is presented, along with justification for their use in benchmarking energy consumption. The selection was designed such that they benchmarks would be cross platform, exercising aspects of the processor and memory system. The benchmarks are intended to be run on the ‘bare metal’ with no host operating system.
+In this paper a set of benchmarks chosen from popular benchmark suites is presented, along with justification for their use in benchmarking energy consumption. The selection was designed such that they benchmarks would be cross platform, exercising aspects of the processor and memory system. The benchmarks are intended to be run on the ‘bare metal’ with no host operating system.
 
 We consider four orthogonal aspects that the benchmark suite must cover, allowing the range of benchmarks to expose all of the behavior of the platform.
 
@@ -81,20 +82,35 @@ We consider four orthogonal aspects that the benchmark suite must cover, allowin
 Using benchmarks that hit combinations of these, interesting observations about the enery consumption of the device can be made.
 
 Six different platforms are targetted by the benchmark suite. Targetting multiple platforms ensures that more general conclusions can be drawn about the nature of the energy consumption.
-\begin{itemize}
-	\setlength{\itemsep}{-0.25em}
-	% \vspace{-2mm}
-	\item STM32F0DISCOVERY - ARM Cortex-M0
-	\item STM32VLDISCOVERY - ARM Cortex-M3
-	\item BeagleBone - ARM Cortex-A8
-	\item Adapteva Epiphany
-	\item XMOS L1
-	\item ChipKIT Uno - PIC32MX (MIPS)
-\end{itemize}
+% \begin{itemize}
+% 	\setlength{\itemsep}{-0.25em}
+% 	% \vspace{-2mm}
+% 	\item STM32F0DISCOVERY - ARM Cortex-M0
+% 	\item STM32VLDISCOVERY - ARM Cortex-M3
+% 	\item BeagleBone - ARM Cortex-A8
+% 	\item Adapteva Epiphany
+% 	\item XMOS L1
+% 	\item ChipKIT Uno - PIC32MX (MIPS)
+% \end{itemize}
+
+\begin{center}
+	\begin{tabular}{l l}
+		Vendor  & Processor \\
+		\hline
+		ARM		& Cortex-M0 \\
+		ARM		& Cortex-M3 \\
+		ARM 	& Cortex-A8 \\
+		Adapteva& Epiphany \\
+		XMOS	& L1 \\
+		Michrochip & PIC32MX (MIPS) \\
+	\end{tabular}
+\end{center}
+
+\todo{concluding sentence.}
 
 \nsection{Previous Work}
 
-MiBench established a well known set of benchmarks with well characterised behaviour. This suite consisted of 37 different benchmarks split across six different categories, chosen to be representative of which applications would be run on both desktop and embedded platforms. Each benchmark is justified, with instruction traces analysed on a model of the StrongARM architecture. This gave a good overview of the proportions of eachtypes of instructions that the benchmarks executed. The drawback of this was that the instruction traces were only gathered for one platform - each benchmark could have a radically different instruction distribution for alternative platforms.
+MiBench established a well known set of benchmarks with well characterised behaviour. This suite consisted of 37 different benchmarks split across six different categories, chosen to be representative of which applications would be run on both desktop and embedded platforms. Each benchmark is justified, with instruction traces analysed on a model of the StrongARM architecture. This gave a good overview of the proportions of each type of instructions that the benchmarks executed. The drawback of this was that the instruction traces were only gathered for one platform - each benchmark could have a radically different instruction distribution for alternative platforms.
 
 MiBench was used as the main benchmark suite for MILEPOST GCC\cite{Fursin2011}. This study applied machine learning to predict which optimizations would benefit a program without needing to perform expensive iterative compilation techniques. In this study they emphasised how the performance acheived can be very dependent on the structure of the benchmarks. This highlights the need to have a wide range of benchmarks which each hit different combinations of the types of computation they could perform.
 
@@ -132,11 +148,11 @@ MiBench was used as the main benchmark suite for MILEPOST GCC\cite{Fursin2011}. 
 	\caption{The platforms explored in this paper along with some relevant details.}
 	\label{Table:Platforms}
 \end{table*}
-ParMiBench, a variant of MiBench was created to address the lack of multithreadedness in the benchmark suite. This attempts to parallelise some of the benchmarks, allowing them to be used to benchmark multicore systems. This has an advantage over other parallel benchmark suites in that it also targets the embedded space. Very few other benchmark suites (such as LINPACK, PARSEC and SPLASH-2\cite{Bienia2008}) target multithreadedness at this level --- most are aimed at large clusters and HPC applications.
+ParMiBench, a variant of MiBench was created to address the lack of multithreadedness in the original suite. This attempts to parallelise some of the benchmarks, allowing them to be used to benchmark multicore systems. This has an advantage over other parallel benchmark suites in that it also targets the embedded space. Very few other benchmark suites (such as LINPACK, PARSEC and SPLASH-2\cite{Bienia2008}) target multithreadedness at this level --- most are aimed at large clusters and HPC applications.
 
-DSPstone\cite{Zivojnovic} is a benchmark suite targeted at Digital Signal Processors (DSPs) and was originally designed to evaluated compiler effectiveness at compiling for DSPs. This suite contains a large amount of non-integer tests, with most tests replicated in fixed point and floating point form. As this set is aimed at DSPs rather than general purpose processors no benchmarks were chosen from DSPstone. The lack of an explicit license attached to these applications also makes it difficult to redistribute them.
+DSPstone\cite{Zivojnovic} is a benchmark suite for Digital Signal Processors (DSPs) and was originally designed to evaluated compiler effectiveness at compiling for DSPs. This suite contains a large amount of non-integer tests, with most tests replicated in fixed point and floating point form. As this set is aimed at DSPs rather than general purpose processors no benchmarks were chosen from DSPstone. The lack of an explicit license attached to these applications also makes it difficult to redistribute them under a single license.
 
-A set of benchmarks is maintained by the worst case execution time (WCET) initiative\cite{Gustafsson2010}. These benchmarks are good because they are self contained and written completely in C. Each benchmark is less comprehensive than from the MiBench set, but focusses on one particular application that may be specifically what a low end processor will perform.
+A set of benchmarks is maintained by the worst case execution time (WCET) initiative\cite{Gustafsson2010}. These benchmarks are good because they are self contained and written completely in C. Each benchmark is less comprehensive than from the MiBench set, but focusses on one particular application that may be specifically what a low end processor will perform. Some of these applications fit well with typical embedded applications,
 
 In addition to the previous benchmark suites, several other suites were evaluated. These were:
 \begin{itemize}
@@ -169,7 +185,7 @@ Table~\ref{Table:Platforms} summarises the platforms selected to represent combi
 
 \nsection{Benchmarks}
 
-A set of benchmark to to tests all aspects of the target platforms has been devised. The benchmarks were selected by defining a coverage matrix which included all the benchmarks from following suites:
+A set of benchmark to to tests all aspects of the target platforms is presented in this section. The benchmarks were selected by defining a coverage matrix which included all the benchmarks from following suites:
 \begin{itemize}
 	\setlength{\itemsep}{-0.35em}
 	\item MiBench
@@ -180,9 +196,9 @@ A set of benchmark to to tests all aspects of the target platforms has been devi
 	\item MediaBench
 \end{itemize}
 
-This matrix evaluated each benchmark for various qualities, such as expected instruction distribtion, types of operations performed, licensing, program length and portability. The final set of benchmarks was chosen from this list so that it was a minimal set covering the range of different instruction distributions. This set is shown in Table~\ref{Table:BenchmarkTable}, along with the amount of each instruction category considered.
+This matrix evaluates each benchmark for various qualities, such as expected instruction distribtion, types of operations performed, licensing, program length and portability. The final set of benchmarks was chosen from this list to be a minimal set covering the range of different instruction distributions. This set is shown in Table~\ref{Table:BenchmarkTable}, along with the amount of each instruction category considered.
 
-Individual tests from several different benchmark suites were considered. In particular MiBench had 37 well defined benchmarks, however a large proportion of these were targeted at much higher end platforms than chosen. This lead to a small subset of the MiBench benchmarks being selected. Several benchmarks were sourced from the WCET set. These tested small applications which could conceivably be ran by the platforms discussed earlier.
+Individual tests from several different benchmark suites were considered. In particular MiBench has 37 well defined benchmarks, however a large proportion of these are targeted at much higher end platforms than chosen. This lead to a small subset of the MiBench benchmarks being selected. Several benchmarks were sourced from the WCET set. These tested small applications which could conceivably be ran by the platforms discussed earlier.
 
 All but two benchmarks come from these two suites. The remaining two were found from other GPL-licensed applications to fill gaps in the suite. Arithmetic compression was chosen because compression algorithms are often included in benchmark suites (as it is a common operation that a system will perform) and it is an unusal type of compression. Triple-DES was chosen as another encryption algorithm to complement Rijndael and Blowfish.
 
