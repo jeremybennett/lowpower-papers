@@ -39,34 +39,32 @@ The energy consumption of our electronic devices is rapidly becoming a large fac
 	\begin{tabular}{l c c c c c c c l}
 	Name				 	& Source 	& B & M & I & FP& T 		& License & Category \\
 	\hline
-	Arithmetic Compression	&			& M & M & L & M & Single 	& GPL	& consumer, telecomm	\\
+	Arithmetic Compression	& Other		& M & M & L & M & Single 	& GPL	& consumer, telecomm	\\
 	FFT						& MiBench 	& M & H & L & H & Multi?	&  GPL	& automotive, telecomm	\\
 	Patricia				& MiBench 	& H & H & L & L & Multi 	& GPL	& network	\\
 	Primes					& WCET 		& M & L & H & L & Multi 	& None	& automotive	\\
-	Triple-DES				&		 	& L & M & H & L & Multi 	& GPL	& security	\\
+	Triple-DES				& Other	 	& L & M & H & L & Multi 	& GPL	& security	\\
 	\hline
-	CRC32					& MiBench 	& L & L & H & L & Single 	& GPL	& network, telecomm	\\
-	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
 	Blowfish				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	Cubic root solver		& MiBench 	& L & L & L & H & Single 	& GPL	& automotive	\\
-	Dijkstra				& MiBench 	& H & M & M & L & Multi 	& GPL	& network	\\
-	FDCT					& WCET 		& M & H & H & L & Single 	& None	& consumer	\\
-	Float Matmult			& WCET 		& M & M & L & H & Single 	& GPL	& automotive, consumer	\\
-	Rjindael				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
-	SHA						& MiBench 	& L & L & H & L & Multi 	& GPL	& network, security	\\
-	2D FIR					& WCET 		& M & H & L & H & Single 	& None	& automotive, consumer	\\
+	CRC32					& MiBench 	& M & L & H & L & Single 	& GPL	& network, telecomm	\\
+	Cubic root solver		& MiBench 	& L & M & H & L & Single 	& GPL	& automotive	\\
+	Dijkstra				& MiBench 	& M & L & H & L & Multi 	& GPL	& network	\\
+	FDCT					& WCET 		& H & H & L & H & Single 	& None	& consumer	\\
+	Float Matmult			& WCET 		& M & H & M & M & Single 	& GPL	& automotive, consumer	\\
+	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
+	Rjindael				& MiBench 	& H & L & M & L & Multi 	& GPL	& security	\\
+	SHA						& MiBench 	& H & M & M & L & Multi 	& GPL	& network, security	\\
+	2D FIR					& WCET 		& H & M & L & H & Single 	& None	& automotive, consumer	\\
 	\end{tabular}
 \caption{Benchmarks selected, and the categories they fit in. Benchmarks after the partition are examined in more detail. Legend in Table~\ref{BenchmarkLegend}.}
 \label{Table:BenchmarkTable}
 \end{table*}
 
-\todo{update table to correspond with trace results}
-
 Many benchmark suites exist already, such as MiBench\cite{Guthaus2001}, MediaBench\cite{Fritts2009}, LINPACK\cite{Dongarra2003}, Dhrystone\cite{Weicker1988} and more. These are all targeted towards larger desktop-based applications, with significant compute power. This is due to their emphasis on measuring performance, as opposed to energy efficiency. Most at least assume a host operating system, which may not be present on an embedded system. Further more, when analysing energy consumption, having to account for the operating system’s effect on the result is non-trivial. These benchmarks --- while in theory are portable --- have significant difficulties running unmodified on embedded platforms due to memory and storage constraints. The issue with portability also arises when it is necessary to constrast multiple platforms.
 
 Currently a good benchmark suite for measuring energy consumption is not available for embedded platforms. MiBench is the closest in terms of variety of benchmarks and applicability but assumes there is a host operating system for the majority of the benchmarks. In particular it requires access to a filesystem which is usually unavailable on small embedded platforms.
 
-In this paper a set of benchmarks chosen from popular benchmark suites is presented, along with justification for their use in benchmarking energy consumption. The selection was designed such that they benchmarks would be cross platform, exercising aspects of the processor and memory system. The benchmarks are intended to be run on the ‘bare metal’ with no host operating system.
+In this paper a set of benchmarks chosen from popular benchmark suites is presented, along with justification for their use in benchmarking energy consumption. The benchmark suite is designed to expose the processor and memory's performance, with other factors such as IO and periphals excluded for portability. The selection was designed such that they benchmarks would be cross platform, exercising aspects of the processor and memory system. The benchmarks are intended to be run on the ‘bare metal’ with no host operating system.
 
 We consider four orthogonal aspects that the benchmark suite must cover, allowing the range of benchmarks to expose all of the behavior of the platform.
 
@@ -204,7 +202,8 @@ All but two benchmarks come from these two suites. The remaining two were found 
 
 MiBench divides the embedded processor applications into six categories: automotive, network, consumer, security, telecomms and office. The benchmarks selected broadly fit into these categories, however consumer and office in particular require the higher end embedded processors. This is due to the benchmarks running `off the shelf' programs such as ghostscript and rsynth.
 
-\todo{why dont we use anything from the other benchmark sets}
+The other applications considered were all found to be too time consuming to port to a small embedded system, or unnecessary for inclusion because other benchmarks performed a similar set of operations.
+
 
 \nsection{Benchmark Descriptions}
 
