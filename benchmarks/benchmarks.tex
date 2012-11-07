@@ -6,6 +6,7 @@
 \usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
 \usepackage{titlesec}
 \usepackage{color}
+\usepackage{caption}
 
 % \usepackage{fontspec}
 % \setmainfont{Humor Sans}
@@ -19,20 +20,19 @@
 \titleformat{\section}{\Large\bfseries\centering\scshape}{}{0em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
 
-\newcommand{\nsection}[1]{\section{\bfseries #1}}
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{#1}}}
 
 \begin{document}
 \maketitle
-\nsection{Abstract}
+\section{Abstract}
 
-\textbf{This paper presents and justifies a benchmark suite targeted at embedded processors for evaluating energy consumption. The possible sources of energy consumption are considered and individual benchmarks selected from contemporary suites to cover key points affecting the energy consumption. The benchmark suite is portable, with six platforms considered. A subset of the platforms and benchmarks are extensively evaluated with instruction traces gathered and their instruction distributions analysed.}
+\textbf{This paper presents and justifies a benchmark suite targeted at embedded processors for evaluating energy consumption. The possible sources of energy consumption are considered and individual benchmarks selected from contemporary suites to cover key points affecting the energy consumption. The benchmark suite is portable, with five platforms considered. A subset of the platforms and benchmarks are extensively evaluated with instruction traces gathered and their instruction distributions analysed.}
 
-\nsection{Introduction}
+\section{Introduction}
 
 Benchmarking is frequently used to gain an idea of how a system will perform during its general use, when the specific environment cannot be reproduced at design-time. This gives designers feedback on how their system will perform and where its performance is lacking. Typically one benchmark cannot exercise all aspects of a target, leading to suites of benchmarks. Each benchmark tests a combination of areas of the hardware. This separation of benchmarks allows the design to see which parts of the hardware perform the best.
 
-The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. A portable embedded system will typically have severe power constraints placed upon it, if it is to have a long battery life. To recognise whether these constraints have been met, the power consumption of the device under a typical load must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, ensuring that the system is fit for purpose.
+The energy consumption of our electronic devices is rapidly becoming a large factor in the design process. A portable embedded system will typically have severe power constraints placed upon it, if it is to have a long battery life. To recognize whether these constraints have been met, the power consumption of the device under a typical load must be tested. To build a full picture of a platform’s energy consumption characteristics, a benchmark suite that hits possible combinations of an applications characteristics (such as memory accesses, integer and floating point operations, etc) is needed. This allows the energy consumption of various components of the system to be determined, ensuring that the system is fit for purpose.
 
 \begin{table*}[th!]
 \centering
@@ -40,23 +40,28 @@ The energy consumption of our electronic devices is rapidly becoming a large fac
 	Name				 	& Source 	& B & M & I & FP& T 		& License & Category \\
 	\hline
 	Arithmetic Compression	& Other		& M & M & L & M & Single 	& GPL	& consumer, telecomm	\\
-	FFT						& MiBench 	& M & H & L & H & Multi?	&  GPL	& automotive, telecomm	\\
+	FFT						& MiBench 	& M & H & L & H & Multi?	& GPL	& automotive, telecomm	\\
 	Patricia				& MiBench 	& H & H & L & L & Multi 	& GPL	& network	\\
-	Primes					& WCET 		& M & L & H & L & Multi 	& None	& automotive	\\
+	Primes					& WCET 		& M & L & H & L & Multi 	& $\textrm{None}^\dagger$	& automotive	\\
 	Triple-DES				& Other	 	& L & M & H & L & Multi 	& GPL	& security	\\
 	\hline
 	Blowfish				& MiBench 	& L & M & H & L & Multi 	& GPL	& security	\\
 	CRC32					& MiBench 	& M & L & H & L & Single 	& GPL	& network, telecomm	\\
 	Cubic root solver		& MiBench 	& L & M & H & L & Single 	& GPL	& automotive	\\
 	Dijkstra				& MiBench 	& M & L & H & L & Multi 	& GPL	& network	\\
-	FDCT					& WCET 		& H & H & L & H & Single 	& None	& consumer	\\
+	FDCT					& WCET 		& H & H & L & H & Single 	& $\textrm{None}^\dagger$	& consumer	\\
 	Float Matmult			& WCET 		& M & H & M & M & Single 	& GPL	& automotive, consumer	\\
-	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& None	& automotive	\\
+	Integer Matmult			& WCET	 	& M & M & H & L & Single 	& $\textrm{None}^\dagger$	& automotive	\\
 	Rjindael				& MiBench 	& H & L & M & L & Multi 	& GPL	& security	\\
 	SHA						& MiBench 	& H & M & M & L & Multi 	& GPL	& network, security	\\
-	2D FIR					& WCET 		& H & M & L & H & Single 	& None	& automotive, consumer	\\
+	2D FIR					& WCET 		& H & M & L & H & Single 	& $\textrm{None}^\dagger$	& automotive, consumer	\\
 	\end{tabular}
-\caption{Benchmarks selected, and the categories they fit in. Benchmarks after the partition are examined in more detail. Legend in Table~\ref{BenchmarkLegend}.}
+\caption{Benchmarks selected, and the categories they fit in. Benchmarks after the partition are examined in more detail. Legend in Table~\ref{BenchmarkLegend}. \\[-0.8em]
+% \begin{flushright}
+ {\null\hfill\scriptsize $\dagger$ Redistributed under the GPL.\hspace{2cm}\null}
+% \end{flushright}
+ % {\hfill\footnotesize $\dagger$ Redistributed under the GPL.}
+ }
 \label{Table:BenchmarkTable}
 \end{table*}
 
@@ -79,7 +84,7 @@ We consider four orthogonal aspects that the benchmark suite must cover, allowin
 
 Using benchmarks that hit combinations of these, interesting observations about the enery consumption of the device can be made.
 
-Six different platforms are targetted by the benchmark suite. Targetting multiple platforms ensures that more general conclusions can be drawn about the nature of the energy consumption.
+five different platforms are targetted by the benchmark suite. Targetting multiple platforms ensures that more general conclusions can be drawn about the nature of the energy consumption.
 % \begin{itemize}
 % 	\setlength{\itemsep}{-0.25em}
 % 	% \vspace{-2mm}
@@ -100,13 +105,12 @@ Six different platforms are targetted by the benchmark suite. Targetting multipl
 		ARM 	& Cortex-A8 \\
 		Adapteva& Epiphany \\
 		XMOS	& L1 \\
-		Michrochip & PIC32MX (MIPS) \\
 	\end{tabular}
 \end{center}
 
 \todo{concluding sentence.}
 
-\nsection{Previous Work}
+\section{Previous Work}
 
 MiBench established a well known set of benchmarks with well characterised behaviour. This suite consisted of 37 different benchmarks split across six different categories, chosen to be representative of which applications would be run on both desktop and embedded platforms. Each benchmark is justified, with instruction traces analysed on a model of the StrongARM architecture. This gave a good overview of the proportions of each type of instructions that the benchmarks executed. The drawback of this was that the instruction traces were only gathered for one platform - each benchmark could have a radically different instruction distribution for alternative platforms.
 
@@ -135,7 +139,7 @@ MiBench was used as the main benchmark suite for MILEPOST GCC\cite{Fursin2011}. 
 \begin{table*}[!hbt]
 	\centering
 	\begin{tabular}{l l l l l}
-		\textbf{Board name} & \textbf{Processor} & \textbf{RAM} & \textbf{Speed} & \textbf{Extra} \\
+		\textbf{Board name} & \textbf{Processor} & \textbf{RAM} & \textbf{Speed} & \textbf{Other} \\
 		\hline
 		STM32F0DISCOVERY	& ARM Cortex-M0 		& 8KB		& 48 MHz		  & 64KB Flash\\
 		STM32VLDISCOVERY	& ARM Cortex-M3 		& 8KB		& 24 MHz		  & 128KB Flash\\
@@ -146,7 +150,7 @@ MiBench was used as the main benchmark suite for MILEPOST GCC\cite{Fursin2011}. 
 	\caption{The platforms explored in this paper along with some relevant details.}
 	\label{Table:Platforms}
 \end{table*}
-ParMiBench, a variant of MiBench was created to address the lack of multithreadedness in the original suite. This attempts to parallelise some of the benchmarks, allowing them to be used to benchmark multicore systems. This has an advantage over other parallel benchmark suites in that it also targets the embedded space. Very few other benchmark suites (such as LINPACK, PARSEC and SPLASH-2\cite{Bienia2008}) target multithreadedness at this level --- most are aimed at large clusters and HPC applications.
+ParMiBench, a variant of MiBench was created to address the lack of multithreadedness in the original suite. This attempts to parallelize some of the benchmarks, allowing them to be used to benchmark multicore systems. This has an advantage over other parallel benchmark suites in that it also targets the embedded space. Very few other benchmark suites (such as LINPACK, PARSEC and SPLASH-2\cite{Bienia2008}) target multithreadedness at this level --- most are aimed at large clusters and HPC applications.
 
 DSPstone\cite{Zivojnovic} is a benchmark suite for Digital Signal Processors (DSPs) and was originally designed to evaluated compiler effectiveness at compiling for DSPs. This suite contains a large amount of non-integer tests, with most tests replicated in fixed point and floating point form. As this set is aimed at DSPs rather than general purpose processors no benchmarks were chosen from DSPstone. The lack of an explicit license attached to these applications also makes it difficult to redistribute them under a single license.
 
@@ -164,26 +168,26 @@ In addition to the previous benchmark suites, several other suites were evaluate
 
 All of these benchmark suites were found to be unsuitable for the aim of characterising energy consumption on embedded platforms due to their reliance on the operating system and features provided by it.
 
-\nsection{Platforms}
+\section{Platforms}
 
-A range of platforms has been chosen, covering different types of architectures for different purposes. The processors are mainly small architectures which are designed for low power usage. As a consequence some of the platforms are very memory limited, restricting the types of applications that would be run on them.
+A range of platforms has been chosen, covering different types of architectures for different purposes. The processors are mainly small embeded systems which are designed for low power usage. As a consequence, some of the platforms are very memory limited, restricting the types of applications that can be run on them.
 
-A set of platforms is needed to complement the benchmark suite due to the varying capabilities of each platform. For example, a benchmark will behave very differently on platforms which have a cache, compared to platforms which do not. As such, we identified a number of parameters that should be varied to ensure the characterisation of the energy consumption is correct:
+A set of platforms is needed to complement the benchmark suite due to the varying capabilities of each platform. For example, a benchmark will behave very differently on platforms which have a cache, compared to platforms which do not. As such, we identified a number of parameters that should be varied to ensure the characterization of the energy consumption is correct:
 
 \begin{itemize}
 	\setlength{\itemsep}{-0.25em}
-	\item Caching
-	\item Multi vs single core.
-	\item Pipeline depth.
-	\item Presence of an FPU.
-	\item On chip vs off chip memory.
+	\item Instruction and data caching
+	\item Multi vs single core
+	\item Pipeline depth
+	\item Presence of an FPU
+	\item On chip vs off chip memory
 \end{itemize}
 
-Table~\ref{Table:Platforms} summarises the platforms selected to represent combinations of the above parameters.
+Table~\ref{Table:Platforms} summarizes the platforms selected to represent combinations of the above parameters.
 
-\nsection{Benchmarks}
+\section{Benchmarks}
 
-A set of benchmark to to tests all aspects of the target platforms is presented in this section. The benchmarks were selected by defining a coverage matrix which included all the benchmarks from following suites:
+A set of benchmarks to tests all aspects of the target platforms is presented in this section. The benchmarks were selected by defining a coverage matrix which included all the individual benchmarks from following suites:
 \begin{itemize}
 	\setlength{\itemsep}{-0.35em}
 	\item MiBench
@@ -194,48 +198,48 @@ A set of benchmark to to tests all aspects of the target platforms is presented 
 	\item MediaBench
 \end{itemize}
 
-This matrix evaluates each benchmark for various qualities, such as expected instruction distribtion, types of operations performed, licensing, program length and portability. The final set of benchmarks was chosen from this list to be a minimal set covering the range of different instruction distributions. This set is shown in Table~\ref{Table:BenchmarkTable}, along with the amount of each instruction category considered.
+This matrix evaluates each benchmark for various qualities, such as expected instruction distribtion, types of operations performed, licensing, program length and portability. The final set of benchmarks was chosen from this list to be a minimal set covering the range of different instruction distributions. This set is shown in Table~\ref{Table:BenchmarkTable}, with the \textit{B}, \textit{M}, \textit{I} and \textit{FP} columns, indicating the relative amount of that type of instruction performed in that benchmark. This values were calculated from a combination of inspecting the source code and from the instruction traces generated.
 
 Individual tests from several different benchmark suites were considered. In particular MiBench has 37 well defined benchmarks, however a large proportion of these are targeted at much higher end platforms than chosen. This lead to a small subset of the MiBench benchmarks being selected. Several benchmarks were sourced from the WCET set. These tested small applications which could conceivably be ran by the platforms discussed earlier.
 
-All but two benchmarks come from these two suites. The remaining two were found from other GPL-licensed applications to fill gaps in the suite. Arithmetic compression was chosen because compression algorithms are often included in benchmark suites (as it is a common operation that a system will perform) and it is an unusal type of compression. Triple-DES was chosen as another encryption algorithm to complement Rijndael and Blowfish.
+All but two benchmarks come from these two suites. The remaining two were found from other GPL-licensed applications to fill gaps in the suite. Arithmetic compression\cite{Howard1992} was chosen because compression algorithms are often included in benchmark suites (as it is a common operation that a system will perform) and it is an unusal type of compression, but used in some consumer applications. Triple-DES was chosen as another encryption algorithm to complement Rijndael and Blowfish benchmarks.
 
 MiBench divides the embedded processor applications into six categories: automotive, network, consumer, security, telecomms and office. The benchmarks selected broadly fit into these categories, however consumer and office in particular require the higher end embedded processors. This is due to the benchmarks running `off the shelf' programs such as ghostscript and rsynth.
 
 The other applications considered were all found to be too time consuming to port to a small embedded system, or unnecessary for inclusion because other benchmarks performed a similar set of operations.
 
 
-\nsection{Benchmark Descriptions}
+\section{Benchmark Descriptions}
 
-This section talks about each benchmark, giving a short description of the benchmark and why it is included. A breakdown of the types of instructions in the benchmark is given for each platform.
+This section talks about each benchmark, giving a short description of the benchmark and why it is included.
 
 \subsection*{Categories}
 
-The benchmarks are divided into several categories, broadly covering the areas where these benchmarks may be used, or which area they best represent. These categories are the same as used in the MiBench paper. However some of the benchmarks are broad enough that the fit into several categories. A more accurate classification of the groups the benchmarks fit into is shown in the table of benchmarks (Table~\ref{Table:BenchmarkTable}).
+The benchmarks are divided into several categories, broadly covering the areas where these benchmarks may be used, or which area they best represent. These categories are the same as used in MiBench. However, some of the benchmarks are broad enough that the fit into several categories. A more accurate classification of the groups the benchmarks fit into is shown in the table of benchmarks (Table~\ref{Table:BenchmarkTable}).
 
 \begin{center}
 	\begin{tabular}{l p{0.55\linewidth}}
 		Category &	Description \\
 		\hline
-		automotive 	& This category demonstrates the mathematical ability of the processor. \\
-		consumer	& Embedded processors are frequently used in consumer applications, performing tasks such as audio and video decoding. \\
-		network		& Processors in routers frequently perform the operations in this category. This involves handling packets and routing graphs. \\
-		telecomm	& Applications that include radio frequency analysis and encoding. \\
-		security	& Encryption algorithms, hashing and signing applications are placed in this category. \\
+		Automotive 	& This category demonstrates the mathematical ability of the processor. \\
+		Consumer	& Embedded processors are frequently used in consumer applications, performing tasks such as audio and video decoding. \\
+		Network		& Processors in routers frequently perform the operations in this category. This involves handling packets and routing graphs. \\
+		Telecomm	& Applications that include radio frequency analysis and encoding. \\
+		Security	& Encryption algorithms, hashing and signing applications are placed in this category. \\
 	\end{tabular}
 \end{center}
 
 \vspace{3mm}
 \textbf{Blowfish}\\
-Blowfish is an encryption algorithm commonly used in cryptography. This benchmark was taken from MiBench but modified to encrypt small blocks of data, as if the data was being streamed into the processor. Encryption typically involves many integer operations with fewer, predictable branches.
+Blowfish is an encryption algorithm commonly used in cryptography. This benchmark was taken from MiBench but modified to encrypt and decrypt small blocks of data, as if the data was being streamed into the processor. The stream is generated pseudo-randomly to avoid platform dependencies on input and output. Encryption typically involves many integer operations with fewer, predictable branches.
 
 \vspace{3mm}
 \textbf{Rijndael}\\
-Rijndael is the algorithm for the Advanced Encryption Standard. It is commonly used in many security applications, and has a similar structure to blowfish.
+Rijndael is the algorithm for the Advanced Encryption Standard. It is commonly used in many security applications, and has a similar structure to blowfish. It also has similar execution characteristics except for more frequent branching.
 
 \vspace{3mm}
 \textbf{Triple-DES}\\
-TripleDES is an older encryption algorithm, similar to blowfish and Rijndael.
+Triple-DES is an older encryption algorithm, similar to blowfish and Rijndael.
 
 \vspace{3mm}
 \textbf{SHA}\\
@@ -243,31 +247,31 @@ Secure Hashing Algorithm (SHA) is a hashing algorithm commonly used for fingerpr
 
 \vspace{3mm}
 \textbf{CRC32}\\
-Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions as it consists mainly of shifts and XORs.
+Similar to SHA, CRC32 is used for verification of data streams, notably ethernet frames. It differs from SHA in that it can be implemented with very few instructions as it consists mainly of shifts and XORs. As it consists of few instructions in a tight loop, this benchmark should exersice processors with superscalar execution or branch prediction.
 
 \vspace{3mm}
 \textbf{Primes}\\
 The primes benchmark implements a prime seive. This benchmark is a more contrived example than others, which would be found in real applications more often. However, it is structured differently to the other integer benchmarks, so provides a useful comparison.
 
 \vspace{3mm}
-\textbf{Integer Matmult}\\
+\textbf{Integer Matrix Multiplication}\\
 Integer matrix multiplication is used very frequently in many applications, and so is a useful benchmark to have. It consists of a tight inner loop with many array accesses, making it useful for stressing the memory and integer pipeline at the same time. This should also expose data caching effects of the platform.
 
 \vspace{3mm}
-\textbf{Float Matmult}\\
+\textbf{Float Matrix Multiplication}\\
 Floating point matrix multiplication is also used frequently. This benchmark is exactly the same as the integer matrix multiplication, but with floating point numbers. This should allow a good metric of relative performance between the integer and floating point pipeline to be produced.
 
 \vspace{3mm}
 \textbf{Arithmetic Compression}\\
-Arithmetic compression is an entropy encoding that can be used to compress data.
+Arithmetic compression is an entropy encoding that can be used to compress data. Arithmetic compression is used in multimedia applications.
 
 \vspace{3mm}
 \textbf{Dijkstra}\\
-This benchmark implements the dijkstra shortest-algorithm path. This benchmark performs lots of non-linear accesses to memory, and branches unpredictably. This makes it good for stressing caches and branch units that the processor may have. This algorithm is commonly used by routers to calculate the shortest path to another router.
+This benchmark implements the Dijkstra shortest-algorithm path. This benchmark performs lots of non-linear accesses to memory, and branches unpredictably. This makes it good for stressing caches and branch units that the processor may have. This algorithm is commonly used by routers to calculate the shortest path to another router.
 
 \vspace{3mm}
 \textbf{Patricia}\\
-This benchmark is similar to dijkstra in structure. It is also used in routers to compress sparse trees. Patricia performs less computation, but stores more complicated data structures in memory, possibly exercising the data caching abilities.
+This benchmark is similar to Dijkstra in structure. It is also used in routers to compress sparse trees. Patricia performs less computation, but stores more complicated data structures in memory, possibly exercising the data caching abilities.
 
 \vspace{3mm}
 \textbf{Cubic root solver}\\
@@ -275,7 +279,7 @@ This benchmark performs a large amount of trigonometry to solve various cubic eq
 
 \vspace{3mm}
 \textbf{2D FIR}\\
-FIR filters are frequently using in image transformations. In the embedded space this could be the type of operations done by digital cameras. This benchmark is similar to the matrix multiplications but with potentially more memory accesses.
+FIR filters are frequently using in image transformations. In the embedded space this could be the type of operations done by digital cameras. This benchmark is similar to the matrix multiplications but with potentially more memory accesses and different arithmetic.
 
 \vspace{3mm}
 \textbf{FFT}\\
@@ -302,39 +306,27 @@ This benchmark was included as it is a core algorithm behind many video decoders
 	\caption{Instruction distribution for the ARM Cortex-M0 platform.}
 	\label{Fig:InstructionDistributionARM}
 \end{figure}
-sudo
 
-\nsection{Benchmark Analysis}
+\section{Benchmark Analysis}
 
-A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categories to ensure that each benchmark performed a different distribution of operations. Figures~\ref{Fig:InstructionDistributionEpiphany}, \ref{Fig:InstructionDistributionXMOS} and \ref{Fig:InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 (Thumb instruction set) platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
+A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categorized to demonstrate that each benchmark performed a different distribution of operations. Figures~\ref{Fig:InstructionDistributionEpiphany}, \ref{Fig:InstructionDistributionXMOS} and \ref{Fig:InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 (Thumb instruction set) platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
 
 Integer operations are the most common type of instruction in almost every benchmark. Across the platforms, the distributions are similar, with small variations due to the underlying instruction set. For example, there are a larger percentage of \texttt{mov}-type instructions in the Epiphany results because there are several predicated \texttt{mov} instructions (\texttt{moveq}, \texttt{movlt}, etc). This reduces the need for conditional branches, so this category decreases in proportion.
+
+Epiphany is also the only platform in the subset chosen which has hardware support for floating point. For the XMOS and ARM platforms, software emulation is used. On the XMOS platform this manifests in extra branch and memory instructions, whereas for the ARM platform the proportion of integer operations rises. These differences are likely due to differences in the software emulation layer used.
 
 The ARM traces follow the same general trend as the traces for XMOS and Epiphany, however with overall less memory operations. This is due to the ARM processor having support for the \texttt{ldm} and \texttt{stm} instruction allowing multiple accesses to memory in a single instruction.
 \todo{Some more discussion about the traces}
 
-The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations. The individual instructions in each category is listed below.
-
-\todo{is this useful? perhaps not.}
-
-\begin{center}
-	\begin{tabular}{l l l l}
-		Category 	& Epiphany  & XMOS 	& ARM \\
-		\hline
-		Integer	 	& 27	  	& 23	& 22  \\
-		Float		& 4			& 0		& 0	  \\
-		Memory		& 8			& 7		& 11  \\
-		Branch		& 23		& 7		& 16  \\
-	\end{tabular}
-\end{center}
+The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations. 
 
 \todo{Summarise the results. why do these results make it a good benchmark suite - varied distribution, similarities across platforms but differences to (as you would expect, with different hardware). Talk about how the hardware contributes to the difference in the results}
 
-\nsection{Evaluation}
+\section{Evaluation}
 
 \todo{With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run?}
 
-\nsection{Conclusion}
+\section{Conclusion}
 
 This paper has presented a benchmark suite that has been designed to expose the energy consumption characteristics of the target platform. We tested it on three separate platforms allowing the orthongality of the benchmark's profiles to be examined. The benchmarks were found to have widely varying behavior making them ideal for their purpose. \todo{}
 
