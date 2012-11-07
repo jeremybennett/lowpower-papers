@@ -108,7 +108,7 @@ five different platforms are targetted by the benchmark suite. Targetting multip
 	\end{tabular}
 \end{center}
 
-\todo{concluding sentence.}
+This paper discusses previous benchmark suites, justifying the need for a benchmark suite targetted at exposing energy consumption characteristics. Then a set of benchmarks chosen from these pre-existing suites is presented, with justifications listed for the benchmarks and the modifications made to them. An analysis of the suite is given, with instruction distributions and how the benchmarks can be used to expose energy consumption characteristics.
 
 \section{Previous Work}
 
@@ -318,9 +318,44 @@ Epiphany is also the only platform in the subset chosen which has hardware suppo
 The ARM traces follow the same general trend as the traces for XMOS and Epiphany, however with overall less memory operations. This is due to the ARM processor having support for the \texttt{ldm} and \texttt{stm} instruction allowing multiple accesses to memory in a single instruction.
 \todo{Some more discussion about the traces}
 
-The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations. 
+The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations.
 
 \todo{Summarise the results. why do these results make it a good benchmark suite - varied distribution, similarities across platforms but differences to (as you would expect, with different hardware). Talk about how the hardware contributes to the difference in the results}
+
+\section{Energy Analysis}
+
+\begin{table}
+	\centering
+	\begin{tabular}{l c c c}
+						& \multicolumn{3}{c}{Energy (pJ)}\\
+		Category 		& Epiphany 	& XMOS 	& ARM  	\\
+		\hline
+		Integer 		&			&		& 1194 	\\
+		Floating Point 	&			&		& 0		\\
+		Memory			&			&		& 2099	\\
+		Branching		&			&		& 1674	\\
+	\end{tabular}
+	\caption{Average energy per instruction for each instruction category calculated by linear regression.}
+	\label{Table:RegressionResults}
+\end{table}
+
+\begin{table}
+	\centering
+	\begin{tabular}{l c c c}
+						& \multicolumn{3}{c}{Energy (pJ)}\\
+		Category 		& Epiphany 	& XMOS 	& ARM  	\\
+		\hline
+		Integer 		&			&		& 1194 	\\
+		Floating Point 	&			&		& 0		\\
+		Memory			&			&		& 2099	\\
+		Branching		&			&		& 1674	\\
+	\end{tabular}
+	\caption{Average energy per instruction as calculated by constructing an instruction-level energy model.}
+	\label{Table:RegressionResults}
+\end{table}
+
+The energy consumption of each benchmark was taken. Linear regression is applied, with the categorized instruction counts gathered from the traces. This allows each category of instructions to be assigned an average energy consumption per instruction. The results of this analysis are presented in Table~\ref{Table:RegressionResults}.
+
 
 \section{Evaluation}
 
