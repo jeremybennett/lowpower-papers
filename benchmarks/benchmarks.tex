@@ -7,6 +7,7 @@
 \usepackage{titlesec}
 \usepackage{color}
 \usepackage{caption}
+\usepackage{supertabular}
 
 % \usepackage{fontspec}
 % \setmainfont{Humor Sans}
@@ -218,7 +219,7 @@ This section talks about each benchmark, giving a short description of the bench
 The benchmarks are divided into several categories, broadly covering the areas where these benchmarks may be used, or which area they best represent. These categories are the same as used in MiBench. However, some of the benchmarks are broad enough that the fit into several categories. A more accurate classification of the groups the benchmarks fit into is shown in the table of benchmarks (Table~\ref{Table:BenchmarkTable}).
 
 \begin{center}
-	\begin{tabular}{l p{0.55\linewidth}}
+	\begin{supertabular}{l p{0.55\linewidth}}
 		Category &	Description \\
 		\hline
 		Automotive 	& This category demonstrates the mathematical ability of the processor. \\
@@ -226,7 +227,7 @@ The benchmarks are divided into several categories, broadly covering the areas w
 		Network		& Processors in routers frequently perform the operations in this category. This involves handling packets and routing graphs. \\
 		Telecomm	& Applications that include radio frequency analysis and encoding. \\
 		Security	& Encryption algorithms, hashing and signing applications are placed in this category. \\
-	\end{tabular}
+	\end{supertabular}
 \end{center}
 
 \vspace{3mm}
@@ -289,6 +290,8 @@ The FFT is used in many applications requiring frequency analysis of data. This 
 \textbf{FDCT}\\
 This benchmark was included as it is a core algorithm behind many video decoders used in consumer products. This benchmark represents real-world usage of the systems as well as testing the floating point pipeline and caches.
 
+\section{Benchmark Analysis}
+
 \begin{figure}[t]
 	\includegraphics[width=\linewidth]{epiphany.pdf}
 	\caption{Instruction distribution for the Epiphany platform.}
@@ -307,8 +310,6 @@ This benchmark was included as it is a core algorithm behind many video decoders
 	\label{Fig:InstructionDistributionARM}
 \end{figure}
 
-\section{Benchmark Analysis}
-
 A subset of the benchmarks were analysed by collecting their instruction traces across three of the platforms. From these graphs the instructions could be categorized to demonstrate that each benchmark performed a different distribution of operations. Figures~\ref{Fig:InstructionDistributionEpiphany}, \ref{Fig:InstructionDistributionXMOS} and \ref{Fig:InstructionDistributionARM} show the instruction distributions for the Epiphany, XMOS and ARM Cortex-M0 (Thumb instruction set) platforms respectively. The `Other' category of instructions contains miscellaneous control instructions that do not fit into other categories (for example, interrupt control on the Epiphany platform).
 
 Integer operations are the most common type of instruction in almost every benchmark. Across the platforms, the distributions are similar, with small variations due to the underlying instruction set. For example, there are a larger percentage of \texttt{mov}-type instructions in the Epiphany results because there are several predicated \texttt{mov} instructions (\texttt{moveq}, \texttt{movlt}, etc). This reduces the need for conditional branches, so this category decreases in proportion.
@@ -316,11 +317,10 @@ Integer operations are the most common type of instruction in almost every bench
 Epiphany is also the only platform in the subset chosen which has hardware support for floating point. For the XMOS and ARM platforms, software emulation is used. On the XMOS platform this manifests in extra branch and memory instructions, whereas for the ARM platform the proportion of integer operations rises. These differences are likely due to differences in the software emulation layer used.
 
 The ARM traces follow the same general trend as the traces for XMOS and Epiphany, however with overall less memory operations. This is due to the ARM processor having support for the \texttt{ldm} and \texttt{stm} instruction allowing multiple accesses to memory in a single instruction.
-\todo{Some more discussion about the traces}
 
 The integer instruction category is the largest group in almost every case, for all platforms and benchmarks. This category, however, includes the most different types of instructions, as it groups arithmetic, register copying and bit-wise operations.
 
-\todo{Summarise the results. why do these results make it a good benchmark suite - varied distribution, similarities across platforms but differences to (as you would expect, with different hardware). Talk about how the hardware contributes to the difference in the results}
+These benchmarks show a range of different quantities of each instruction, with similarities across platforms. This makes the set of benchmarks ideal for use in energy profiling of a system.
 
 \section{Energy Analysis}
 
@@ -348,22 +348,35 @@ The integer instruction category is the largest group in almost every case, for 
 		Integer 		&			&		& 1194 	\\
 		Floating Point 	&			&		& 0		\\
 		Memory			&			&		& 2099	\\
-		Branching		&			&		& 1674	\\
+		Branch  		&			&		& 	\\
+		\null\hspace{3mm}Unconditional  &			&		& 3000	\\
+		\null\hspace{3mm}Conditional 	&			&		& 	\\
+		\null\hspace{6mm}Taken  		&			&		& 2900	\\
+		\null\hspace{6mm}Not taken  	&			&		& 900	\\
 	\end{tabular}
 	\caption{Average energy per instruction as calculated by constructing an instruction-level energy model.}
-	\label{Table:RegressionResults}
+	\label{Table:IModelResults}
 \end{table}
 
 The energy consumption of each benchmark was taken. Linear regression is applied, with the categorized instruction counts gathered from the traces. This allows each category of instructions to be assigned an average energy consumption per instruction. The results of this analysis are presented in Table~\ref{Table:RegressionResults}.
 
+These results were checked by constructing an instruction-level energy model, by gathering energy data for microbenchmarks consisting only of the target instruction. These energies were then averaged, to give an average energy per instruction group. These energies are shown in Table~\ref{Table:IModelResults}.
 
-\section{Evaluation}
+For the most part the energies are as expected, close to the figures given by the more detailed model. There are a few difference, however. Branching is different, when a conditional branch is evaluated, if the branch is taken, the pipeline must be flush and more work must be done. This is apparent in the ARM processor, where taking a conditional branch costs 2900pJ, whereas not taking this branch only uses 900pJ.
 
-\todo{With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run?}
+\todo{Draw more conclusion about the pipelines of the processors, when data inserted}
+
+% \section{Evaluation}
+
+% \todo{With base energy measurements for each instruction, estimate amount of energy each benchmark should take from proportion of instructions. Compare these to actual figures from the benchmarks being run?}
 
 \section{Conclusion}
 
-This paper has presented a benchmark suite that has been designed to expose the energy consumption characteristics of the target platform. We tested it on three separate platforms allowing the orthongality of the benchmark's profiles to be examined. The benchmarks were found to have widely varying behavior making them ideal for their purpose. \todo{}
+This paper has presented a benchmark suite that has been designed to expose the energy consumption characteristics of the target platform. We tested it on three separate platforms allowing the orthongality of the benchmark's profiles to be examined. The benchmarks were found to have widely varying behavior making them ideal for their purpose.
+
+The benchmark suite targeted the processor core of the embedded platforms, not exercising peripherals or IO. In future this benchmark suite could be extended to allow these items to be tested, but it remains to be seen how this can be done in a portable way.
+
+Energy figures were gathered for each benchmark, and these figures related to the instruction categories used to choose the benchmarks. This allows conclusions to be drawn about the energy consumption of the platforms.
 
 \printbibliography
 
