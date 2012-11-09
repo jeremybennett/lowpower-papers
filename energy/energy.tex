@@ -63,13 +63,13 @@
 	\label{Table:Platforms}
 \end{table*}
 
-\nsection{Abstract}
+\section{Abstract}
 
 {\bfseries
 This paper uses an innovative technique to explore the effect on energy consumption of 87 optimizations GCC performs when compiling 10 benchmarks for five different embedded platforms. Hardware power measurements on each platform are taken to ensure all architectural effects on the energy are captured. A fractional factorial design is used to separate the effects of each optimization and account for interactions between optimizations. We find that in the majority of cases execution time and energy consumption are highly correlated, but the effect a particular optimization may have is non-trivial due to its interactions with other optimizations. Also it is noticed that the structure of the benchmark has a larger effect than the platform on whether the optimization will be effective, and no one optimization is universally positive for run-time or energy consumption.
 }
 
-\nsection{Introduction}
+\section{Introduction}
 
 
 % Talk about energy consumption in general
@@ -127,7 +127,7 @@ This paper covers the design and results of the experiments. First, previous wor
 % Using a fractional factorial design the individual optimizations comprising each optimization level in GCC are analysed for their main and two-way interactions.
 % This paper extensively evaluates possible optimizations available in GCC.
 
-\nsection{Previous work}
+\section{Previous work}
 
 % Mention not much previous work. Lots of work done on performance, and mostly assumed to carry over. Not much done with real hardware
 To date there has been very little work extensively exploring the effect that different compiler optimizations have on energy consumption. Most studies focus on only a few optimizations in isolation, and few consider multiple platforms with different architectural features. Commonly explored optimizations such as loop unrolling, inlining and instruction scheduling have been examined extensively for different platforms, using both simulators and hardware measurements\cite{EffectOfCompilerOptimizationsOnPentium4}.
@@ -194,7 +194,7 @@ Architectural modifications to embedded processors have been proposed as a way t
 Several novel types of compiler optimizations have been proposed. Seth et al.\cite{Seth2001} explored the possibility of using the compile to insert \texttt{idle} instructions automatically, increasing the execution time up to a set limit. Using the SIMD pipeline been shown to decrease energy consumption\cite{Ibrahim2009} by roughly 25\%. Scheduling instructions to minimize the inter-instruction energy cost was evaluated to be another effective method to reduce a programs energy consumption\cite{Parikh}.
 
 
-\nsection{Approach}
+\section{Approach}
 
 The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across multiple different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This could lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compile optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in the following section).
 
@@ -216,7 +216,7 @@ These benchmarks were constructed to run on the `bare metal' --- no host OS need
 
 In this paper we explore the impact of compiler optimizations using the GCC toolchain on the architectures in Table~\ref{Table:Platforms}. GCC exposes its various optimizations via a number of flags that can be passed to the compiler. We explore what flags are and are not significant for energy consumption and execution time.
 
-\nsection{Fractional Factorial Design}
+\section{Fractional Factorial Design}
 
 GCC has over 150 different options that can be enabled to control optimizations. The majority of these options are binary --- the optimization pass is either enabled or disabled. To further complicate matters, an optimization path may be affected by other passes happening before it. As it is infeasible to test all possible combinations of options, a trade-off can be made. One of our main contributions is to deploy fractional factorial design (FFD) to massively reduce the exploration space, whilst still identifying the options in the set that contribute to run-time and energy. This approach has been explored before in `Feedback-Directed Selection and Characterization of Compiler Optimizations'\cite{IntelPaper}, where nine optimizations were explored in just 35 tests as opposed to the 512 required for a full factorial design.
 
@@ -265,7 +265,7 @@ For example, if the test shown in Figure~\ref{Fig:BlowfishMainEffects} was rerun
 	\label{Fig:OverallView}
 \end{figure*}
 
-\nsection{Experimental Design}
+\section{Experimental Design}
 
 This section talks about the individual experiments that were run on the hardware. For each platform and benchmark combination the following experiments were carried out. The majority of compilers come with pre-bundled collections of flags: generally the optimization levels \texttt{-O1}, \texttt{-O2} and \texttt{-O3}. The increasing numbers indicate how much optimization is done on the target. These bundles contain options that reduce the performance in some case, so to find an optimal set the optimizations in the bundle have to be examined.
 
@@ -289,13 +289,13 @@ As with the previous two experiments this uses an FFD to examine the 9 factors e
 
 This experiment enabled the first optimization level (\texttt{-O1}) then individually added or subtracted possible optimization flags. The aim of this experiment was to identify if a single flag could have a significant difference on the energy consumption.
 
-\nsection{Hardware Setup}
+\section{Hardware Setup}
 
 All the measurements were taken using the INA219 power monitoring IC\cite{INA219}, which provides power, current and voltage outputs. This chip measures the voltage drop across a small shunt resistor inline with the target circuit. For all platforms this is placed after the voltage regulator, before the main processor. Each INA219 chip is connected the an XMOS controller board to record the results and transfer them to the host PC. Each platform has a GPIO line connected to the controller which is used to identify when the benchmarks start and end, allowing just the intended portion of the benchmark to be measured (ignoring any extra initialization code).
 
 The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recording the power consumed by the whole microprocessor. For the BeagleBone there are three available measurement points: the Cortex-A8 core, on-chip peripherals (caches, power management) and the external SDRAM memory IC. This allows the effect of the compiler optimizations on the memory to be recorded. Adapteva's Epiphany board has two measurement points: the core power consumption and IO power consumption, whereas the XMOS board's measurement point gathers power consumption data for the core of the processor.
 
-\nsection{Results}
+\section{Results}
 
 \begin{figure}[t]
 	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-a8/O3_main_effects_2dfir.pdf}
@@ -529,14 +529,14 @@ As mentioned in previous sections, similar options are seen to affect the energy
 \end{figure*}
 
 
-\nsection{Modelling}
+\section{Modelling}
 
 As mentioned earlier it is unlikely that a model exists that can predict how a set of optimizations will perform. However, if one were to be found, it would allow designers to make fast guesses about how their program will be optimized.
 
 Given out previous conclusions regarding the difficulty of correlating optimizations against improvements, we would expect such a model to yeild only mediocre results. We wish to verify this hypothesis, since the construction of such a model that produces good results would serve to invalidate our previous conclusions. Our method was to construct a linear model using the data from the FFD. The resulting model fails to capture the higher order effects of some of the benchmarks. Figure~\ref{Fig:twoway_cubic} shows the cubic benchmark on the Cortex-M0 along with prediction, when pairs of optimizations are turned on. This shows the chaotic patterns that the constructed model was unable to capture.
 
 
-\nsection{Discussion}
+\section{Discussion}
 
 In this section, we explore any sources of error in our measurements and corresponding conclusions.
 Using the FFD method allows a good estimate of the impact each compiler option has, while accounting for possible interactions between the options.
@@ -565,7 +565,7 @@ There were other sources of error:
 
 % Why did we get these results
 
-\nsection{What does this mean for the compiler writer?}
+\section{What does this mean for the compiler writer?}
 
 The existing collections of optimizations at the various levels (\texttt{O1}, etc.) do a good job of optimizing for performance, and consequently, energy. These strike a good balance between ease of use and performance. However, they will never be as optimal as searching through the full optimization space. Developing machine-learning compiler technologies similar to MILEPOST GCC would be ideal, because reasonable set of optimizations could be predicted, though this still requires a large amount of training data. This is especially true as the effectiveness and types of optimizations was found to be heavily based on the structure of the application being compiled itself. Implementing this would reduce compile times as well as the energy and execution time of the application.
 
@@ -573,7 +573,7 @@ This study concentrated on GCC, as it is a mature compiler supporting many diffe
 
 % Finally, this work only explored applying optimizations as a whole to the benchmark. Applying options separately to different regions of code (such as on a per-function basis) could yield further results, at the cost of a much larger space to explore.
 
-\nsection{Conclusion}
+\section{Conclusion}
 
 % \todo{most of the current optimizations in gcc reduce the total workload of the program. this in turn reduces the energy. if just energy reduction without performance gain is required, other optimizations will have to be implemented. the need for energy specific optimizations}
 
@@ -594,7 +594,7 @@ It is very difficult to predict which optimizations will have an effect, whether
 
 % \todo{Very useful to have compiler optimizations decided by the features of the benchmark as optimization dont apply all the time, and by using a feature detect to match programs to optimizations would reduce compile time and increase efficiency.}
 
-\nsection{Acknowledgements}
+\section{Acknowledgements}
 
 This work has been supported by funding from Embecosm\cite{Embecosm}. Development hardware provided by Adapteva\cite{Adapteva}.
 
