@@ -374,7 +374,7 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 	\label{Fig:AddsubO1Blowfish}
 \end{figure*}
 
-A further conclusion of this study is of the difficulty in predicting the effectiveness of an optimization. This section presents a case stufy where optimization flags are seen to affect energy chaotically. 
+A further conclusion of this study is of the difficulty in predicting the effectiveness of an optimization. This section presents a case stufy where optimization flags are seen to affect energy chaotically.
 
 Examining the correlation between optimizations and their effects is a complex issue. Due to non-linear interactions, one would expect that the prediction of effects is difficult. This is borne out by our experimental results: as seen in previous figures~\ref{Fig:BlowfishMainEffects} and~\ref{Fig:FdctO2MainEffects}, less than a third of the options have a significant impact. For the other optimizations, higher order interactions cause unpredictable effects, where enabling or disabling a particular optimization can completely change the effect of many other subsequent optimization passes.
 
@@ -437,11 +437,11 @@ This unpredictability suggests that these options have many interdependencies th
 
 \subsection{The Universality of Flags}
 
-\todo{Todo: tie in with previous section about difficult of choosing options, variation seen on platforms. Possibly instruction set having a larger difference than architecture?}
+An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due to time constraints when taking the measurements.
 
-An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs.
+It can be seen that for the ARM platforms a similar set of options is seen for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption.
 
-It can be seen that in many cases a similar set of options is seen for the same benchmark. Furthermore, only 20 out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
+Furthermore, only 20 out of 82 options (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
 From this is can be seen that the \texttt{-fomit-frame-pointer} flag is very effective at reducing the energy consumption. This is somewhat expected as this optimization frees up a register that would otherwise be used for the frame pointer where it is not needed. Closely following this option \texttt{-ftree-loop-optimize}.
 
