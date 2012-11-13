@@ -299,12 +299,6 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 
 \section{Results}
 
-\begin{figure}[t]
-	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-a8/O3_main_effects_2dfir.pdf}
-	\caption{2D FIR benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O3} are listed.}
-	\label{Fig:O3_2dfir_A8}
-\end{figure}
-
 
 \subsection*{Time and Energy}
 
@@ -316,6 +310,12 @@ A high level overview of each platform and benchmark for different optimization 
 	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-m0/O1_main_effects_blowfish.pdf}
 	\caption{Blowfish benchmark on the Cortex-M0 platform. Individual options enabled at \texttt{O1} are listed.}
 	\label{Fig:BlowfishMainEffects}
+\end{figure}
+
+\begin{figure}[t]
+	\includegraphics[width=\linewidth,clip,trim=0.5cm 0 2cm 1.8cm]{cortex-a8/O3_main_effects_2dfir.pdf}
+	\caption{2D FIR benchmark on the Cortex-A8 platform. Individual options enabled at \texttt{O3} are listed.}
+	\label{Fig:O3_2dfir_A8}
 \end{figure}
 
 \begin{table}
@@ -360,7 +360,7 @@ The greatest difference between energy and time was using the Cortex-A8. For the
 
 \subsection{Efficient SIMD Units}
 
-An interesting effect is seen in 2dfir for this processor. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation of this \texttt{O3} enables two options that have a significant effect on the energy (shown in Figure~\ref{Fig:O3_2dfir_A8}):
+An interesting effect is seen in 2D FIR for this processor. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation of this \texttt{O3} enables two options that have a significant effect on the energy (shown in Figure~\ref{Fig:O3_2dfir_A8}):
 \begin{itemize}
 	\item \texttt{\bfseries -fgcse-after-reload}. This option enables an extra pass to eliminate redundant loads after spill code has been generated.
 	\item \texttt{\bfseries -ftree-vectorize}. This option vectorizes loops so that SIMD instructions can be used.
