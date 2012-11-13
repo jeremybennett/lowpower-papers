@@ -198,7 +198,7 @@ Several novel types of compiler optimizations have been proposed. Seth et al.\ci
 
 \section{Approach}
 
-The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across multiple different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This could lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compile optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in the following section).
+The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across multiple different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This could lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compile optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in the following section). 
 
 %Talk about how different benchmarks are needed, taken from contempory, chosen to be implementable,
 %short paragraph, quick justification.
@@ -224,7 +224,7 @@ GCC has over 150 different options that can be enabled to control optimizations.
 
 The drawback to this approach is that the high-order interactions between options will not be discernible. Fortunately this is not usually a problem as these types of interactions are statistically rare. The degree to which this happens is specified by the FFD's resolution. A resolution 5 design ensures that the main effects are not aliased with anything lower than 4th order interactions.
 
-Using the Yates algorithm\cite{BoxHunter} the effect for any single or combination of factors can be found from the data. This gives an average estimation for how much this factor or interaction affects the result of the experiment
+Using the Yates algorithm\cite{BoxHunter} the effect for any single or combination of factors can be found from the data. This gives an average estimation for how much this factor or interaction affects the result of the experiment. The Mann-Whitney statistical test is used to determine whether the factor represents a significant change in performance as detailed in \cite{EnergyReductionCompilerOptions} and \cite{Haneda2005}.
 
 % This section outlines the fractional factorial design (FFD) method used in this paper.
 
@@ -334,7 +334,7 @@ A high level overview of each platform and benchmark for different optimization 
 
 There is very little divergence in the platforms with `simple' pipelines --- energy and execution time are highly correlated. This is due to the nature of the pipeline: there is little scope for instruction level parallelism and complex instruction scheduling. For these devices, simply reducing the total number of instructions executed reduces the energy accordingly. The opposite is seen with the Cortex-A8's much more complex pipeline: its energy consumption profile becomes more complex.
 
-Further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization has on the runtime and energy consumption, as calculated by the FFD.
+Further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization has on the runtime and energy consumption, as calculated by the FFD. The significance bracket above the bars indicates when the results satisfies the following hypothesis: it is 95\% certain that the result represents a signficant impact on the energy consumption of the benchmark.
 
 Figure~\ref{Fig:FdctO2MainEffects} highlights a discrepancy that occurred between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce instruction stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
 
@@ -597,12 +597,3 @@ It is very difficult to predict which optimizations will have an effect, whether
 \printbibliography
 
 \end{document}
-
-
-things to discuss
-  some cases where omit-frame-pointer good, some bad
-  sorting algorithms interesting
-  cant predict
-  lots of high level stuff - majority of cases time and energy correlated
-    interesting where its not, but most of the time its a very small percentage that could easily be explained away
-    no large optimizations which affect energy rather than execution time
