@@ -474,34 +474,23 @@ As mentioned in previous sections, similar options are seen to affect the energy
 	\end{tabular} \\[1em]
 
 	\begin{tabular}{>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l
-					>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l
+					% >{\fontsize{8}{1}\selectfont}c | r >{\ttfamily\fontsize{8}{1}\selectfont}l
 					>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l }
-	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} \\
+	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} \\
 	\hline
 	\fontsize{9}{1}\selectfont
-	A & 11 & -ftree-dominator-opts &
-	B & 10 & -fomit-frame-pointer &
-	C & 10 & -ftree-loop-optimize \\
-	D & 7  & -fdce &
-	E & 7  & -fguess-branch-probability &
-	F & 7  & -fmove-loop-invariants \\
-	G & 7  & -ftree-ter &
-	H & 6  & -ftree-ch &
-	I & 6  & -ftree-fre \\
-	J & 5  & -ftree-forwprop &
-	K & 4  & -fschedule-insns &
-	L & 3  & -finline-small-functions \\
-	M & 3  & -fschedule-insns2 &
-	N & 3  & -ftree-pre &
-	O & 1  & -fcombine-stack-adjustments \\
-	P & 1  & -fipa-profile &
-	Q & 1  & -ftree-pta &
-	R & 1  & -ftree-sra \\
-	S & 1  & -fgcse  &
-	T & 1  & -fpeephole2 &
-
-	&&\\
+	A & 11 & -ftree-dominator-opts & 	 K & 4  & -fschedule-insns \\
+	B & 10 & -fomit-frame-pointer &      L & 3  & -finline-small-functions \\
+	C & 10 & -ftree-loop-optimize &      M & 3  & -fschedule-insns2 \\
+	D & 7  & -fdce &                     N & 3  & -ftree-pre \\
+	E & 7  & -fguess-branch-probability &    O & 1  & -fcombine-stack-adjustments \\
+	F & 7  & -fmove-loop-invariants &    P & 1  & -fipa-profile \\
+	G & 7  & -ftree-ter &                Q & 1  & -ftree-pta \\
+	H & 6  & -ftree-ch &                 R & 1  & -ftree-sra \\
+	I & 6  & -ftree-fre &                S & 1  & -fgcse  \\
+	J & 5  & -ftree-forwprop &           T & 1  & -fpeephole2 \\
 	\end{tabular}
+
 
 	\caption{Table showing the most effective option for each platform-benchmark combination. Options considered were
 	optimizations enabled by \texttt{O1}, \texttt{O2} and \texttt{O3} levels.}
