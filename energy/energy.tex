@@ -161,7 +161,7 @@ A drawback of the studies that do explore energy consumption is that many of the
 
 SimplePower\cite{SimplePower} is another simulator that has been used to explore the effects of the software running on a processor. This simulator targets a five stage RISC pipeline, with models estimating the energy consumption based on the number of transitions on bus signal lines as well as various other components.
 
-Various other models have been created to simulate power consumption of the processor\cite{Park2011,Schneider2005}. These all suffer the drawback that some energy consumption effects may not be modeled, potentially skewing the results.
+Various other models have been created to simulate power consumption of the processor, including complex instruction level models\cite{Steinke2001}, function-level models\cite{Qu2000} and hybrids of the previous two\cite{Blume2007}. These all suffer the drawback that some energy consumption effects may not be modeled, potentially skewing the results.
 
 \subsection{Optimization Choice}
 
@@ -180,7 +180,9 @@ Iterative compilation has been examined as a possibility for choosing optimizati
 
 %However iterative compilation does not account for interactions between the optimization passes which could potentially have N! combinations to explore.
 
-While this does reduce the masking effect that a significant optimization can have, due to the vast number of interactions between compiler options, the flag may not have the same effect when combined with other optimizations. In this paper, we improve these shortcomings using a technique called fractional factorial designs.
+Other approaches have looked at genetic algorithms for optimization selection\cite{Lin2008} and optimization phase ordering\cite{}. While these techniques are shown to be effective, they have the drawback that the reasons behind the optimization's select is non-obvious.
+
+These techniques do not expose the relationships between optimizations, instead opting to search though the optimization space and make a best guess where to look next. In this paper, we improve these shortcomings using a technique called fractional factorial designs to explore the most effective options and the interactions between them.
 
 Fractional factorial design, as a method for exploring the interactions of compiler optimizations was explored in the paper `Feedback-Directed Selection and Characterization of Compiler Optimizations'\cite{IntelPaper}. Nine optimizations were examined, using a fractional factorial technique to isolate the interactions and choose a set of optimizations that gave better performance then just turning all the optimizations on.
 
@@ -401,7 +403,15 @@ As mentioned in previous sections, similar options are seen to affect the energy
 \end{figure*}
 
 
-\begin{table}[t!hb]
+
+The previous section concluded that there was not a single optimization that was universally good for all benchmarks and platforms. In this section, this is extended further, concluding that there is a very chaotic relationship between the platform, benchmark, optimization and the effectiveness of the optimization.
+
+Examining the correlation between optimizations and their effects is a complex issue. Due to non-linear interactions, one would expect that the prediction of effects is difficult. This is borne out by our experimental results: as seen in previous figures~\ref{Fig:BlowfishMainEffects} and~\ref{Fig:FdctO2MainEffects}, less than a third of the options have a significant impact. For the other optimizations, higher order interactions cause unpredictable effects, where enabling or disabling a particular optimization can completely change the effect of many other subsequent optimization passes.
+
+In Figure~\ref{Fig:AddsubO1Blowfish}, several unexpected effects worthy of further investigation can be seen. This graph shows individual optimizations being turned on and off, using the \texttt{O1} optimization level as a base. The flags on the left of the \texttt{O1} section were found to decrease the energy consumption when disabled, an effect not seen in the FFD results. These flags were chosen for further exploration.
+
+
+\begin{table}[thb]
 	\centering
 	\begin{tabular}{c <{\hspace{-2mm}} c <{\hspace{-2mm}} c <{\hspace{-2mm}} c <{\hspace{-2mm}} c r@{.}l c r@{.}l }
 		& & & \multicolumn{3}{c}{\null\hfill\bfseries \texttt{O1}} & \multicolumn{3}{c}{\hfill\bfseries \texttt{O2}} \\
@@ -446,12 +456,6 @@ As mentioned in previous sections, similar options are seen to affect the energy
 	\label{Table:ExhaustiveLegend}
 \end{table}
 
-
-The previous section concluded that there was not a single optimization that was universally good for all benchmarks and platforms. In this section, this is extended further, concluding that there is a very chaotic relationship between the platform, benchmark, optimization and the effectiveness of the optimization.
-
-Examining the correlation between optimizations and their effects is a complex issue. Due to non-linear interactions, one would expect that the prediction of effects is difficult. This is borne out by our experimental results: as seen in previous figures~\ref{Fig:BlowfishMainEffects} and~\ref{Fig:FdctO2MainEffects}, less than a third of the options have a significant impact. For the other optimizations, higher order interactions cause unpredictable effects, where enabling or disabling a particular optimization can completely change the effect of many other subsequent optimization passes.
-
-In Figure~\ref{Fig:AddsubO1Blowfish}, several unexpected effects worthy of further investigation can be seen. This graph shows individual optimizations being turned on and off, using the \texttt{O1} optimization level as a base. The flags on the left of the \texttt{O1} section were found to decrease the energy consumption when disabled, an effect not seen in the FFD results. These flags were chosen for further exploration.
 
 To explore the inconsistency, a small case study was performed, where all combinations of four options were explored. The energy figures for exhaustive exploration can be seen in Table~\ref{Table:Exhaustive}, with the aim being to ascertain whether the effect of this energy reduction would compound with multiple flags. The \texttt{O1} column of this table shows the results of the options applied over the \texttt{O1} optimization level. The \texttt{O2} column shows the same but on top of the \texttt{O2} optimization level.
 
