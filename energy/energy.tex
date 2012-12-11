@@ -293,9 +293,7 @@ A high level overview of each platform and benchmark for different optimization 
 	\label{Fig:O3_2dfir_A8}
 \end{figure}
 
-There is very little divergence in the platforms with `simple' pipelines --- energy and execution time are highly correlated. This is due to the nature of the pipeline: there is little scope for instruction level parallelism and complex instruction scheduling. For these devices, simply reducing the total number of instructions executed reduces the energy accordingly. The opposite is seen with the Cortex-A8's much more intricate pipeline: its energy consumption profile becomes more complex.
-
-Further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization has on the runtime and energy consumption, as calculated by the FFD. The significance bracket above the bars indicates when the results satisfies the following hypothesis: it is 95\% certain that the result represents a signficant impact on the energy consumption of the benchmark.
+Further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization has on the runtime and energy consumption, as calculated by the FFD. As these results come from a total of 2048 seperate runs, even a small percentage change is statistically significant. This significance is calculated using the Mann-Whitney test --- the bracket above the bars indicates when the results satisfies the following hypothesis: it is 95\% certain that the result represents a signficant impact on the energy consumption of the benchmark.
 
 Figure~\ref{Fig:FdctO2MainEffects} highlights a discrepancy that occurred between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce instruction stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
 
@@ -335,13 +333,68 @@ The greatest difference between energy and time was discovered while using the C
 	\label{Table:SIMD}
 \end{table}
 
-An interesting effect is seen in 2D FIR for this processor. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation of this \texttt{O3} enables two options that have a significant effect on the energy (shown in Figure~\ref{Fig:O3_2dfir_A8}):
-\begin{itemize}
-	\item \texttt{\bfseries -fgcse-after-reload}. This option enables an extra pass to eliminate redundant loads after spill code has been generated.
-	\item \texttt{\bfseries -ftree-vectorize}. This option vectorizes loops so that SIMD instructions can be used.
-\end{itemize}
+An interesting effect is seen in 2D FIR for this processor. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation, this is caused bt the \texttt{-ftree-vectorize} optimization having an impact on energy consumptions with no change in execution time (shown in Figure~\ref{Fig:O3_2dfir_A8}). This option vectorizes loops, so that SIMD instructions can be inserted. Further investigation of the NEON SIMD unit was done using some small micro-benchmarks. The results of these are shown in Table~\ref{Table:SIMD}, showing for multiplication the NEON unit uses a lot less power than using the normal Cortex-A8 multiplier.
 
-Further investigation of the NEON SIMD unit was done using some small micro-benchmarks. The results of these are shown in Table~\ref{Table:SIMD}, showing for multiplication the NEON unit uses a lot less power than using the normal Cortex-A8 multiplier.
+TODO link with next section
+
+% talk about what the results are briefly
+% second and third order interactions
+
+\subsection{The Universality of Flags}
+
+An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due to time constraints when taking the measurements.
+
+Only 20 out of 82 options examined (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
+
+It can be seen that for the ARM platforms a similar set of options is seen for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this can allow the compiler to eliminate parts of the control flow graph, if the code is never called, removing branches and decreasing the overall amount of work the application performs.
+
+The optimization listed most frequently in the table is \texttt{-ftree-dominator-opts}. The prevalance of this flag is likely due to it enabling several simple optimization passes, performing optimizations such as copy propogation and expression simplification. Another effective optimization is \texttt{-fomit-frame-pointer}. This optimization frees an additional register for general use by not using a frame pointer. This optimization is seen frequently on the ARM platforms, however not at all on the Epiphany. This is likely due to the ARM processors suffering from greater register pressure as they only have 16 registers compared to the Epiphany's 64.
+
+We see some interesting correlations between platforms. The optimizer has trouble optimizing the crc32 benchmark, with the Cortex-M0 and Cortex-M3 only having one optimization which has any significant effects (\texttt{-fmove-loop-invariants}). The Cortex-A8 sees an additional optimization having an effect, however this is still secondary to the previously mentioned optimization (it had an average of a 1.3\% effect on the energy consumption).
+
+As mentioned in previous sections, similar options are seen to affect the energy consumption across benchmarks. This is due to the optimizations being targeted to specific high level language constructs, which only appear in some of the benchmarks. These results show the difficulty of choosing one optimization which is good in all cases. In many cases the instruction set and microarchitecture of the processor have a large effect on how much the energy consumption is reduced, meaning that a singularly good optimization cannot be chosen.
+
+\begin{table*}
+	\centering
+	\begin{tabular}{l >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c }
+		\bfseries Benchmark&\rmfamily\bfseries Cortex-M0&\rmfamily\bfseries Cortex-M3 & \rmfamily\bfseries Cortex-A8		& \rmfamily\bfseries Epiphany\\
+		\hline
+		2dfir          & E & T, G, H & N, G, C & H, A, D\\
+		blowfish       & B, J, E & J, B, G & K, B, E & D, P, H\\
+		crc32          & F & F & F, G & \\
+		cubic          & A, I & A, I & A & A, I, O\\
+		dijkstra       & I, A, B & F, I, A & F, I, A & \\
+		fdct           & J, G, D & J, G, K & M, K, J & A, H, D\\
+		float\_matmult & C, E & C, E, G & N, L & D, H, A\\
+		int\_matmult   & C, E, B & C, L, F & L, N, M & A, H, D\\
+		rijndael       &  & B, C, R & K, B, S & \\
+		sha            & B, C, E & C, B, F & C, B, M & D, C, Q\\
+
+	\end{tabular} \\[1em]
+
+	\begin{tabular}{>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l
+					% >{\fontsize{8}{1}\selectfont}c | r >{\ttfamily\fontsize{8}{1}\selectfont}l
+					>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l }
+	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} \\
+	\hline
+	\fontsize{9}{1}\selectfont
+	A & 11 & -ftree-dominator-opts & 	 K & 4  & -fschedule-insns \\
+	B & 10 & -fomit-frame-pointer &      L & 3  & -finline-small-functions \\
+	C & 10 & -ftree-loop-optimize &      M & 3  & -fschedule-insns2 \\
+	D & 7  & -fdce &                     N & 3  & -ftree-pre \\
+	E & 7  & -fguess-branch-probability &    O & 1  & -fcombine-stack-adjustments \\
+	F & 7  & -fmove-loop-invariants &    P & 1  & -fipa-profile \\
+	G & 7  & -ftree-ter &                Q & 1  & -ftree-pta \\
+	H & 6  & -ftree-ch &                 R & 1  & -ftree-sra \\
+	I & 6  & -ftree-fre &                S & 1  & -fgcse  \\
+	J & 5  & -ftree-forwprop &           T & 1  & -fpeephole2 \\
+	\end{tabular}
+
+
+	\caption{Table showing the most effective option for each platform-benchmark combination. Options considered were
+	optimizations enabled by \texttt{O1}, \texttt{O2} and \texttt{O3} levels.}
+	\label{Table:BestFlags}
+\end{table*}
 
 \subsection{Optimization Chaos}
 
@@ -351,13 +404,15 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 	\label{Fig:AddsubO1Blowfish}
 \end{figure*}
 
+TODO link with previous, seen how not one single good optimizatoin, can we choose  a set of good optimizations?
+
 A further conclusion of this study is of the difficulty in predicting the effectiveness of an optimization. This section presents a case study where optimization flags are seen to affect energy chaotically.
 
 Examining the correlation between optimizations and their effects is a complex issue. Due to non-linear interactions, one would expect that the prediction of effects is difficult. This is borne out by our experimental results: as seen in previous figures~\ref{Fig:BlowfishMainEffects} and~\ref{Fig:FdctO2MainEffects}, less than a third of the options have a significant impact. For the other optimizations, higher order interactions cause unpredictable effects, where enabling or disabling a particular optimization can completely change the effect of many other subsequent optimization passes.
 
 In Figure~\ref{Fig:AddsubO1Blowfish}, several unexpected effects worthy of further investigation can be seen. This graph shows individual optimizations being turned on and off, using the \texttt{O1} optimization level as a base. The flags on the left of the \texttt{O1} section were found to decrease the energy consumption when disabled, an effect not seen in the FFD results. These flags were chosens for futher exploration.
 
-To explore the unpredictability, a small case study was performed, where all combinations of four options were explored. The energy figures for exhausive exploration can be seen in Table~\ref{Table:Exhaustive}, with the aim being to ascertain whether the effect of this energy reduction would compound with multiple flags. The \texttt{O1} column of this table shows the results of the options applied over the \texttt{O1} optimization level. The \texttt{O2} column shows the same but on top of the \texttt{O2} optimization level.
+To explore the inconsistancy, a small case study was performed, where all combinations of four options were explored. The energy figures for exhausive exploration can be seen in Table~\ref{Table:Exhaustive}, with the aim being to ascertain whether the effect of this energy reduction would compound with multiple flags. The \texttt{O1} column of this table shows the results of the options applied over the \texttt{O1} optimization level. The \texttt{O2} column shows the same but on top of the \texttt{O2} optimization level.
 
 From the \texttt{O1} column this it can be seen that there are many interactions occurring between the options, as simply turning all of these options off does not decrease the energy (in fact it increases the consumption by 1.81\%). Furthermore, when disabled individually, \texttt{-fguess-branch-probability} and \texttt{-ftree-dominator-opts} decrease the energy by 2.49\% and 1.76\% respectively. However when both enabled, the energy consumption (relative to \texttt{O1}) is only 0.93\% less --- worse than each flag individually.
 
@@ -409,65 +464,6 @@ This unpredictability suggests that these options have many interdependencies th
 
 
 
-% talk about what the results are briefly
-% second and third order interactions
-
-\subsection{The Universality of Flags}
-
-An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labelled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due to time constraints when taking the measurements.
-
-Only 20 out of 82 options examined (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
-
-It can be seen that for the ARM platforms a similar set of options is seen for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this can allow the compiler to eliminate parts of the control flow graph, if the code is never called, removing branches and decreasing the overall amount of work the application performs.
-
-The optimization listed most frequently in the table is \texttt{-ftree-dominator-opts}. The prevalance of this flag is likely due to it enabling several simple optimization passes, performing optimizations such as copy propogation and expression simplification. Another effective optimization is \texttt{-fomit-frame-pointer}. This optimization frees an additional register for general use by not using a frame pointer. This optimization is seen frequently on the ARM platforms, however not at all on the Epiphany. This is likely due to the ARM processors suffering from greater register pressure as they only have 16 registers compared to the Epiphany's 64.
-
-Displaying the results in this way highlights some interesting correlations between platforms. The optimizer has trouble optimizing the crc32 benchmark, with the Cortex-M0 and Cortex-M3 only having one optimization which has any significant effects (\texttt{-fmove-loop-invariants}). The Cortex-A8 sees an additional optimization having an effect, however this is still secondary to the previously mentioned optimization (it had an average of a 1.3\% effect on the energy consumption).
-
-As mentioned in previous sections, similar options are seen to affect the energy consumption across benchmarks. This is due to the optimizations being targeted to specific high level language constructs, which only appear in some of the benchmarks. These results show the difficulty of choosing one optimization which is good in all cases. In many cases the instruction set and microarchitecture of the processor have a large effect on how much the energy consumption is reduced, meaning that a singularly good optimization cannot be chosen.
-
-\begin{table*}
-	\centering
-	\begin{tabular}{l >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c }
-		\bfseries Benchmark&\rmfamily\bfseries Cortex-M0&\rmfamily\bfseries Cortex-M3 & \rmfamily\bfseries Cortex-A8		& \rmfamily\bfseries Epiphany\\
-		\hline
-		2dfir          & E & T, G, H & N, G, C & H, A, D\\
-		blowfish       & B, J, E & J, B, G & K, B, E & D, P, H\\
-		crc32          & F & F & F, G & \\
-		cubic          & A, I & A, I & A & A, I, O\\
-		dijkstra       & I, A, B & F, I, A & F, I, A & \\
-		fdct           & J, G, D & J, G, K & M, K, J & A, H, D\\
-		float\_matmult & C, E & C, E, G & N, L & D, H, A\\
-		int\_matmult   & C, E, B & C, L, F & L, N, M & A, H, D\\
-		rijndael       &  & B, C, R & K, B, S & \\
-		sha            & B, C, E & C, B, F & C, B, M & D, C, Q\\
-
-	\end{tabular} \\[1em]
-
-	\begin{tabular}{>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l
-					% >{\fontsize{8}{1}\selectfont}c | r >{\ttfamily\fontsize{8}{1}\selectfont}l
-					>{\fontsize{9}{1}\selectfont}c | r >{\ttfamily\fontsize{9}{1}\selectfont}l }
-	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} \\
-	\hline
-	\fontsize{9}{1}\selectfont
-	A & 11 & -ftree-dominator-opts & 	 K & 4  & -fschedule-insns \\
-	B & 10 & -fomit-frame-pointer &      L & 3  & -finline-small-functions \\
-	C & 10 & -ftree-loop-optimize &      M & 3  & -fschedule-insns2 \\
-	D & 7  & -fdce &                     N & 3  & -ftree-pre \\
-	E & 7  & -fguess-branch-probability &    O & 1  & -fcombine-stack-adjustments \\
-	F & 7  & -fmove-loop-invariants &    P & 1  & -fipa-profile \\
-	G & 7  & -ftree-ter &                Q & 1  & -ftree-pta \\
-	H & 6  & -ftree-ch &                 R & 1  & -ftree-sra \\
-	I & 6  & -ftree-fre &                S & 1  & -fgcse  \\
-	J & 5  & -ftree-forwprop &           T & 1  & -fpeephole2 \\
-	\end{tabular}
-
-
-	\caption{Table showing the most effective option for each platform-benchmark combination. Options considered were
-	optimizations enabled by \texttt{O1}, \texttt{O2} and \texttt{O3} levels.}
-	\label{Table:BestFlags}
-\end{table*}
-
 \begin{figure*}
 	\centering
     \begin{minipage}[l]{0.98\columnwidth}
@@ -494,21 +490,22 @@ As mentioned in previous sections, similar options are seen to affect the energy
 
 \section{Modelling}
 
-As mentioned earlier it is unlikely that a model exists that can predict how a set of optimizations will perform. However, if one were to be found, it would allow designers to make fast guesses about how their program will be optimized.
+As mentioned earlier, it is unlikely that a model exists that can predict how a set of optimizations will perform. However, if one were to be found, it would allow designers to make fast guesses about how their program will be optimized.
 
-Given our previous conclusions regarding the difficulty of correlating optimizations against improvements, we would expect such a model to yield only mediocre results. We wish to verify this hypothesis, since the construction of such a model that produces good results would serve to invalidate our previous conclusions. Our method was to construct a linear model using the data from the FFD. The resulting model fails to capture the higher order effects of some of the benchmarks. Figure~\ref{Fig:twoway_cubic} shows the cubic benchmark on the Cortex-M0 along with prediction, when pairs of optimizations are turned on. This shows the chaotic patterns that the constructed model was unable to capture.
+Given our previous conclusions regarding the difficulty of correlating optimizations against improvements, we would expect such a model to yield only mediocre results. To explore this assertion we attempted to create such a model. Our method was to construct a linear model using the data from the FFD. The resulting model fails to capture the higher order effects of some of the benchmarks. Figure~\ref{Fig:twoway_cubic} shows the cubic benchmark on the Cortex-M0 along with prediction, when pairs of optimizations are turned on. This shows the chaotic patterns that the constructed model was unable to capture.
 
+TODO describe model more: same best optimizations, order is wrong, choatic patterns not captured, predicts much worse behaviour than seen
 
 \section{Discussion}
 
 In this section, we explore any sources of error in our measurements and corresponding conclusions.
 Using the FFD method allows a good estimate of the impact each compiler option has, while accounting for possible interactions between the options.
 
-The hardware measurements itself have several sources of error. The most apparent errors are variations in the timing: the INA219 is polled at intervals of roughly 1~ms and the power measurement integrated over this. The interval is occasionally larger - the bottleneck was transferring the data over the communication link back to the PC. When many devices were simultaneously sending measurements the threads on the controller would stall to wait for the communication channel to become free, causing measurement intervals of up to 10~ms. However this did not impact the results hugely as the energy integral over this time is largely similar, and each test was repeated multiple times to ensure consistent results.
+The hardware measurements have several sources of error. The most apparent errors are variations in the timing: the INA219 is polled at intervals of roughly 1~ms and the power measurement integrated over this. The interval is occasionally larger - the bottleneck was transferring the data over the communication link back to the PC. When many devices were simultaneously sending measurements the threads on the controller would stall to wait for the communication channel to become free, causing measurement intervals of up to 10~ms. However this did not impact the results hugely as the energy integral over this time is largely similar, and each test was repeated multiple times to ensure consistent results.
 
 Other sources of error were identified as:
 \begin{itemize}
-	\item \textbf{ADC offset}. The ADC in the INA219 randomly fluctuated $\pm$30~$\mu$V. This could be compensated for by using a larger shunt resistor, so that this voltage change became insignificant.
+	\item The ADC in the INA219 randomly fluctuated $\pm$30~$\mu$V.
 	\item \textbf{Cold start problem}. The issue of what was in the instruction/data caches before a benchmark executed would change the execution time and energy profile of the test. Many investigations neglect to consider this basic factor, and it is important to discuss its impact in our results. The nature of many of the embedded platforms we examined is that caches are not present in any except for the BeagleBone, and so this factor is irrelevant. For the BeagleBone, the target benchmarks fitted entirely inside the cache. Whilst this does not stress the full memory hierarchy and explains a lack of variation in the memory subsystem results, it does present a level playing field and a fair comparison across the platforms.
 \end{itemize}
 
