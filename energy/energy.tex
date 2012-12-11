@@ -35,15 +35,43 @@
 
 \graphicspath{{./images/}}
 
-\title{\bfseries\fontsize{22}{1}\selectfont Identifying Compiler Options to Minimize Energy Consumption for Embedded Platforms}
-\author{James Pallister, Simon Hollis, Jeremy Bennett}
+\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
 
+\title{\bfseries\fontsize{20}{1}\selectfont Identifying Compiler Options to Minimize Energy Consumption for Embedded Platforms}
+% \author{\fontsize{13}{1}\selectfont
+% James Pallister\superscript{\footnotesize1}, Simon Hollis\superscript{\footnotesize2} and Jeremy Bennett\superscript{\footnotesize3} \\[1em]
+% 	\fontsize{11}{1}\selectfont\superscript{\footnotesize1} \superscript{\footnotesize2} Department of Computer Science, University of Bristol, \\
+% 	\fontsize{11}{1}\selectfont Merchant Venturers Building, Woodland Road, \\
+% 	\fontsize{11}{1}\selectfont Bristol, BS8 1UB, United Kingdom. \\
+% 	\fontsize{11}{1}\selectfont\superscript{\footnotesize1}\texttt{james.pallister@bristol.ac.uk}
+% 	\fontsize{11}{1}\selectfont\superscript{\footnotesize2}\texttt{simon@cs.bris.ac.uk} \\[1em]
+% 	\fontsize{11}{1}\selectfont\superscript{\footnotesize3} Palamos House \#104, 66/67 High Street, \\
+% 	\fontsize{11}{1}\selectfont Lymington, SO41 9AL, United Kingdom. \\
+% 	\fontsize{11}{1}\selectfont \texttt{jeremy.bennett@embecosm.com}
+% }
+
+\author{
+\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont James Pallister\\[0.5em]\texttt{james.pallister@bris.ac.uk}}
+\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont Simon Hollis\\[0.5em]\texttt{simon@cs.bris.ac.uk}}
+\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont Jeremy Bennett\\[0.5em]\texttt{jeremy.bennett@embecosm.com}} \\[1.5em]
+\parbox{0.66\linewidth}{\centering\fontsize{12}{1}\selectfont
+Department of Computer Science, \\
+University of Bristol, \\
+Merchant Venturers Building, \\
+Woodland Road, Bristol, BS8 1UB\\
+United Kingdom}
+\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont
+Palamos House \#104, \\
+66/67 High Street, \\
+Lymington, SO41 9AL, United Kingdom. \\
+}
+}
+\date{}
 \titleformat{\section}{\Large\bfseries\centering\scshape}{}{0em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
 
 \newcommand{\nsection}[1]{\section{\bfseries #1}}
 
-\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
 \newcommand{\todo}[1]{\textbf{\textcolor{red}{#1}}}
 
 % \let\oldcite\cite
@@ -105,7 +133,7 @@ Optimizing for low energy consumption is particularly important for deeply embed
 %Many people think that this has been done, but no extensive data gathered on.
 %Mention iterative compilation paper: only looked at 2 optimisations for 3 limited test cases. Want to know if faster program=less energy.
 % not many studies with real hardware measurements
-Compiler optimizations have the potential for energy savings with no changes to existing applications --- just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option's efficacy cannot be tested in isolation. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually. There have been many approaches attempted to solve this problem\cite{Haneda2005, Lin2008, Triantafyllis}. These studies look at various statistical methods and genetic algorithms to select optimizations. All of these studies conclude that performance can be gained from choosing the correct set of optimizations, but exploring the space to find this set is challenging.
+Compiler optimizations have the potential for energy savings with no changes to existing applications --- just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option's efficacy cannot be tested in isolation. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually. There have been many approaches attempted to solve this problem using statistical methods\cite{Haneda2005}, genetic algorithms\cite{Lin2008} and iterative compilation\cite{Kisuki1999}. These studies look at various statistical methods and genetic algorithms to select optimizations. All of these studies conclude that performance can be gained from choosing the correct set of optimizations, but exploring the space to find this set is challenging.
 
 This paper performs an advanced analysis that attempts to separate out the main effect the individual optimizations have from their interactions with other optimizations. These measurements are taken for each optimization grouping, across five platforms and ten benchmarks. We are able to assign an average effect to each optimization, enabling us to see which optimizations significantly affect the energy consumption. Each experiment we perform targets the set of optimizations enabled at a different optimization level, and overall this allows them to be sorted into three categories: decreases energy consumption, has no effect at all, or increases energy consumption.
 
