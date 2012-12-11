@@ -107,18 +107,9 @@ A fractional factorial design is used to separate the effects of each optimizati
 
 \section{Introduction}
 
-% Talk about energy consumption in general
-% energy consumption important
-% many hardware features and optimizations (clock gating) to lower power consumption
-% but cant be considered independently, software must be considered too, as it controls the hardware
+
 Energy consumption is rapidly becoming one of the most important design constraints when writing software for embedded platforms. In the hardware space there have been many features such as clock gating to reduce the power consumption of electronic devices. However, inefficient software can negate any gains from the hardware, so the combination of software and hardware must be taken together when exploring energy usage. We focus on embedded platforms, because energy efficiency is particularly important in the design and operation of these processors.
 
-% talk about embedded platforms
-% lots of different architectures
-% each has different energy consumption characteristics
-%talk about power, aswell.
-%less spikey power consumption,
-%less overall power consumption = less bulky power supplies
 Optimizing for low energy consumption is particularly important for deeply embedded systems, which may have to adhere to a strict power budget. In these systems the processor is only one of the components consuming energy. A previous study characterized the CPU power usage of a mobile phone to be between 10 and 20\% of the total system power\cite{SmartPhonePower}. As the radio consumes roughly 50\% of the power in this system, it can be seen in systems without the GSM component the processor takes a non-trivial proportion of the power.
 
 \begin{figure}[b!]
@@ -127,17 +118,10 @@ Optimizing for low energy consumption is particularly important for deeply embed
 	\label{Fig:setup}
 \end{figure}
 
- % previous studies have established that the processor takes between 20\% and 40\% of the overall system power \todo{Find a reference for this? is this true?} For the embedded space, power consumption is also an issue. A lower power draw results in small circuitry for the power supply\todo{(REF)}.
-
-%GCC Talk compiler optimisations affecting performance.
-%Many people think that this has been done, but no extensive data gathered on.
-%Mention iterative compilation paper: only looked at 2 optimisations for 3 limited test cases. Want to know if faster program=less energy.
-% not many studies with real hardware measurements
 Compiler optimizations have the potential for energy savings with no changes to existing applications --- just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option's efficacy cannot be tested in isolation. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually. There have been many approaches attempted to solve this problem using statistical methods\cite{Haneda2005}, genetic algorithms\cite{Lin2008} and iterative compilation\cite{Kisuki1999}. These studies look at various statistical methods and genetic algorithms to select optimizations. All of these studies conclude that performance can be gained from choosing the correct set of optimizations, but exploring the space to find this set is challenging.
 
 This paper performs an advanced analysis that attempts to separate out the main effect the individual optimizations have from their interactions with other optimizations. These measurements are taken for each optimization grouping, across five platforms and ten benchmarks. We are able to assign an average effect to each optimization, enabling us to see which optimizations significantly affect the energy consumption. Each experiment we perform targets the set of optimizations enabled at a different optimization level, and overall this allows them to be sorted into three categories: decreases energy consumption, has no effect at all, or increases energy consumption.
 
-% hardware
 All the energy measurements in this paper are taken using physical measurement circuitry attached to the processors. This avoids the use of models which could be inaccurate, or modeling synthetic processors with no real world counterpart. A diagram of the software and hardware setup is shown in Figure~\ref{Fig:setup}. By using commonly available platforms and processors along with some more novel architectures, the results are applicable in general while still providing insight into how different types of architectures perform. There are five platforms examined in this paper, shown in Table~\ref{Table:Platforms}.
 
 This paper covers the design and results of the experiments. First, previous work in this space is discussed, along with the novel contribution this paper makes. After this, the approach and a brief discussion of fractional factorial design is listed. Then, the experiments are presented with results. Finally, the results are evaluated and conclusions drawn.
@@ -228,8 +212,6 @@ Several novel types of compiler optimizations have been proposed. Seth et al\cit
 
 The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across several different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compiler optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in the following section).
 
-%Talk about how different benchmarks are needed, taken from contempory, chosen to be implementable,
-%short paragraph, quick justification.
 To explore the impact  realistic set of test input programs is needed. Since there have been many attempts to find representative programs, but none apply to a wide range of embedded processing systems, a set of benchmarks has been derived from contemporary suites. This set of 10 benchmarks (shown in Table~\ref{Table:Benchmarks}) covers real world and synthetic applications across different aspects of the target platform. Previous work on modeling the energy consumption of processors has shown that the pipelines and functional units enabled have a significant impact on the energy consumption. To cover these points, the benchmarks were chosen to cover the following coarse criteria:
 \begin{itemize}
 	\setlength{\itemsep}{0em}
@@ -271,10 +253,6 @@ The drawback to this approach is that the high-order interactions (effects due t
 Using the Yates algorithm\cite{BoxHunter} the effect for any single or combination of factors can be found from the data. This gives an average estimation for how much this factor or interaction affects the result of the experiment. The Mann-Whitney statistical test is used to determine whether the factor represents a significant change in performance as detailed in \cite{EnergyReductionCompilerOptions} and \cite{Haneda2005}.
 
 All FFDs used were generated by R\cite{R}, using the FrF2 library\cite{FrF2}.
-
-
-%Result graph here for better placement
-
 
 \section{Hardware Setup}
 
