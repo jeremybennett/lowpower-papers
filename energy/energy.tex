@@ -61,6 +61,7 @@ Merchant Venturers Building, \\
 Woodland Road, Bristol, BS8 1UB\\
 United Kingdom}
 \parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont
+Embecosm \\
 Palamos House \#104, \\
 66/67 High Street, \\
 Lymington, SO41 9AL, United Kingdom. \\
@@ -85,20 +86,20 @@ Lymington, SO41 9AL, United Kingdom. \\
 \begin{table*}[!hbt]
 	\centering
 	\begin{tabular}{l l l l l}
-		\textbf{Board name} & \textbf{Processor} & \textbf{RAM} & \textbf{Speed} & \textbf{Extra} \\
+		\textbf{Processor} & \textbf{Board name}  & \textbf{RAM} & \textbf{Speed} & \textbf{Extra} \\
 		\hline
-		STM32F0DISCOVERY	& ARM Cortex-M0 		& 8KB		& 48 MHz		  & 64KB Flash\\
-		STM32VLDISCOVERY	& ARM Cortex-M3 		& 8KB		& 24 MHz		  & 128KB Flash\\
-		BeagleBone			& ARM Cortex-A8 		& 256MB		& 500 MHz		  & VFP/NEON, superscalar\\
-		EMEK3				& Adapteva E16 			& 32KB/core & 400 MHz		  & FPU, superscalar, 16 core NoC\\
-		XK1					& XMOS L1 				& 64KB		& 100 MHz 		& 4$\times$100MHz hardware threads \\
+		ARM Cortex-M0 	 & STM32F0DISCOVERY		& 8KB		& 48 MHz		  & 64KB Flash\\
+		ARM Cortex-M3 	 & STM32VLDISCOVERY		& 8KB		& 24 MHz		  & 128KB Flash\\
+		ARM Cortex-A8 	 & BeagleBone			& 256MB		& 500 MHz		  & VFP/NEON, superscalar\\
+		Adapteva Epiphany 	 & EMEK3				& 32KB/core & 400 MHz		  & FPU, superscalar, 16 core NoC\\
+		XMOS L1 		 & XK1					& 64KB		& 100 MHz 		& 4$\times$100MHz hardware threads \\
 	\end{tabular}
 	\caption{The platforms explored in this paper along with some relevant details.}
 	\label{Table:Platforms}
 \end{table*}
 
 \section{Abstract}
-
+\raggedbottom
 {\bfseries
 This paper uses an innovative technique to explore the effect on energy consumption of 87 of the optimizations GCC performs when compiling 10 benchmarks for five different embedded platforms. Hardware power measurements on each platform are taken to ensure all architectural effects on the energy are captured.
 
@@ -114,11 +115,11 @@ Optimizing for low energy consumption is particularly important for deeply embed
 
 \begin{figure}[b!]
 	\includegraphics[width=\linewidth]{diagram.pdf}
-	\caption{The hardware and software set up used in this paper.}
+	\caption{The hardware and software setup used in this paper.}
 	\label{Fig:setup}
 \end{figure}
 
-Compiler optimizations have the potential for energy savings with no changes to existing applications --- just tweaking the compiler's parameters can have a large effect on the performance. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option's efficacy cannot be tested in isolation. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually. There have been many approaches attempted to solve this problem using statistical methods\cite{Haneda2005}, genetic algorithms\cite{Lin2008} and iterative compilation\cite{Kisuki1999}. These studies look at various statistical methods and genetic algorithms to select optimizations. All of these studies conclude that performance can be gained from choosing the correct set of optimizations, but exploring the space to find this set is challenging.
+Compiler optimizations have the potential for energy savings with no changes to existing applications --- just tweaking the compiler's parameters can have a large effect on the energy consumption. This relationship is complex, with the program, processor architecture and specific compiler options interacting together. Furthermore, different optimization passes interact with each other meaning that an option's efficacy cannot be tested in isolation. For example, inlining a function may mean that more effective common expression elimination can be performed, reducing the instruction count more than either option individually. There have been many approaches attempted to solve this problem using statistical methods\cite{Haneda2005}, genetic algorithms\cite{Lin2008} and iterative compilation\cite{Kisuki1999}. All of these studies conclude that performance can be gained from choosing the correct set of optimizations, but exploring the space to find this set is challenging.
 
 This paper performs an advanced analysis that attempts to separate out the main effect the individual optimizations have from their interactions with other optimizations. These measurements are taken for each optimization grouping, across five platforms and ten benchmarks. We are able to assign an average effect to each optimization, enabling us to see which optimizations significantly affect the energy consumption. Each experiment we perform targets the set of optimizations enabled at a different optimization level, and overall this allows them to be sorted into three categories: decreases energy consumption, has no effect at all, or increases energy consumption.
 
@@ -153,9 +154,9 @@ This paper covers the design and results of the experiments. First, previous wor
 
 To date there has been very little work extensively exploring the effect that different compiler optimizations have on energy consumption. However, there have been many studies looking at the effect of optimizations on execution time\cite{Haneda2005}, and several studies suggesting that execution time can be used as a proxy for execution time\cite{CompilingForPerformancePower}.
 
-Of the studies that do look at optimizations and energy, most focus on only a few optimizations in isolation and few consider multiple platforms with different architectural features. Commonly explored optimizations such as loop unrolling, inlining and instruction scheduling have been examined extensively for different platforms, using both simulators and hardware measurements\cite{EffectOfCompilerOptimizationsOnPentium4}.
+The topic of performance and energy being highly correlated is addressed in `Is Compiling for Performance == Compiling for Power?'\cite{CompilingForPerformancePower}. The paper explored several different overall optimization levels, as well as four specific optimizations, also using the Wattch simulator to gather energy results. However, the specific optimizations were all applied individually on top of \texttt{-O1}, without exploring any possible interactions between the optimizations. The main conclusion drawn from this study was that most optimizations reduce the number of instructions executed, hence reducing energy consumption and execution time simultaneously.
 
-The topic of performance and energy being highly correlated is addressed in `Is Compiling for Performance == Compiling for Power?'\cite{CompilingForPerformancePower}. The paper explored several different overall optimization levels, as well as four specific optimizations, also using the Wattch simulator to gather energy results. However the specific optimizations were all applied individually on top of \texttt{-O1}, without exploring any possible interactions between the optimizations. The main conclusion drawn from this study was that most optimizations reduce the number of instructions executed, hence reducing energy consumption and execution time simultaneously.
+Of the studies that do look at optimizations and energy, most focus on only a few optimizations in isolation and few consider multiple platforms with different architectural features. Commonly explored optimizations, such as loop unrolling\cite{Ayala2004}, loop fusion\cite{Zhu2004}, function inlining\cite{Kim2012} and instruction scheduling\cite{Toburen1998}, have been examined extensively for different platforms using both simulators and hardware measurements\cite{EffectOfCompilerOptimizationsOnPentium4}.
 
 A drawback of the studies that do explore energy consumption is that many of them choose to use simulators as opposed to taking hardware measurements. The Wattch simulator\cite{Wattch} is commonly used and is designed to allow easy energy measurements while exploring architectural configurations. The accuracy of Wattch is established at being within 10\% of an industry layout-level power tool. Unfortunately, Wattch does not model every hardware component in the processor, which makes it difficult to be certain about the overall energy consumption of the processor.
 
@@ -173,18 +174,16 @@ Chakrapani et al attempt to classify optimizations by the effect they have on pe
 	\vspace{-1mm}
 	\item Reduction in energy consumption due to increase in performance. These optimizations reduce the number of cycles or instructions needed to complete the application and thus less overall work is done.
 	\item Optimizations that reduce energy while not improving the performance. Scheduling instructions to reduce switching often falls into this category.
-	\item Optimizations that increase energy consumption or performance. These would typically be bad optimizations to choose.
+	\item Optimizations that increase energy consumption or performance.
 \end{itemize}
 
-Iterative compilation has been examined as a possibility for choosing optimizations that reduce power by Gheorghita et al\cite{IterativeCompilationForEnergy}. In this paper, the effect of different loop unrolling and loop tiling parameters on energy consumption is examined for three benchmarks --- all matrix-based benchmarks. The energy consumption was estimated using the Wattch simulator as opposed to taking hardware measurements. The paper concluded that iterative compilation was an effective method of decreasing energy consumption as well as improving performance.
+Iterative compilation has been examined as a possibility for choosing optimizations that reduce power by Gheorghita et al\cite{IterativeCompilationForEnergy}. In this paper, the effect of different loop unrolling and loop tiling parameters on energy consumption is examined for three linear-algebra-based benchmarks using a simulator. The paper concluded that iterative compilation was an effective method of decreasing energy consumption as well as improving performance.
 
-%However iterative compilation does not account for interactions between the optimization passes which could potentially have N! combinations to explore.
+Other approaches have looked at genetic algorithms for optimization selection\cite{Lin2008} and optimization phase ordering\cite{Almagor2004}. While these techniques are shown to be effective, they have the drawback that the reasons behind the optimization's select is non-obvious.
 
-Other approaches have looked at genetic algorithms for optimization selection\cite{Lin2008} and optimization phase ordering\cite{}. While these techniques are shown to be effective, they have the drawback that the reasons behind the optimization's select is non-obvious.
+These techniques do not expose the relationships between optimizations, instead opting to search though the optimization space and make a best guess where to look next. In this paper, we improve these shortcomings using a technique called fractional factorial designs\cite{BoxHunter} to explore the most effective options and the interactions between them.
 
-These techniques do not expose the relationships between optimizations, instead opting to search though the optimization space and make a best guess where to look next. In this paper, we improve these shortcomings using a technique called fractional factorial designs to explore the most effective options and the interactions between them.
-
-Fractional factorial design, as a method for exploring the interactions of compiler optimizations was explored in the paper `Feedback-Directed Selection and Characterization of Compiler Optimizations'\cite{IntelPaper}. Nine optimizations were examined, using a fractional factorial technique to isolate the interactions and choose a set of optimizations that gave better performance then just turning all the optimizations on.
+Fractional factorial design, as a method for exploring the interactions of compiler optimizations was explored in the paper `Feedback-Directed Selection and Characterization of Compiler Optimizations'\cite{IntelPaper}. Nine optimizations were examined, using a fractional factorial technique to isolate the interactions and choose a set of optimizations that gave better performance than just enabling all the optimizations.
 
 A similar study conducted by Patyk et al\cite{EnergyReductionCompilerOptions}, extended this work to energy efficiency. The study explored a range of GCC's options, with an aim to reduce energy consumption by identifying significant optimizations then excluding them from further exploration, using fractional factorial designs. We use this technique to analyse the optimizations rather than optimize for the energy consumption.
 
@@ -192,7 +191,7 @@ These methods of testing over many different compilations is a significant overh
 
 \subsection{Optimizations Targeting Energy}
 
-The previous studies all look at how to utilize existing optimization to target energy consumption. However, all of these optimizations were written with the aim of reducing execution time. Several other techniques have been proposed to develop optimizations that target energy consumption.
+The previous studies all look at how to utilize existing optimization to target energy consumption. However, all of these optimizations were written with the aim of reducing execution time, not energy consumption. Several other techniques have been proposed to develop optimizations that specific target energy consumption.
 
 An analysis of the techniques the compiler can perform to optimize for energy was carried out by Tiwari, Malik and Wolfe\cite{CompilationTechniquesForLowEnergy}. They identified several possible techniques that compilers could use to reduce the energy consumption of programs:
 \begin{itemize}
@@ -206,15 +205,15 @@ An analysis of the techniques the compiler can perform to optimize for energy wa
 	\item Improve page hits.
 \end{itemize}
 
-It is expected that optimizations that cover some of these points will have an effect on energy. The last three will also normally increase performance as well as reduce energy.
+It is expected that optimizations covering some of these points will have an effect on energy. The last three will also normally increase performance as well as reduce energy.
 
 Several novel types of compiler optimizations have been proposed. Seth et al\cite{Seth2001} explored the possibility of using the compiler to insert \texttt{idle} instructions automatically, increasing the execution time up to a set limit. Using the SIMD pipeline has been shown to decrease energy consumption\cite{Ibrahim2009} by roughly 25\%. Scheduling instructions to minimize the inter-instruction energy cost was evaluated to be another effective method to reduce a programs energy consumption\cite{Parikh}.
 
 \section{Approach}
 
-The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across several different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compiler optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in the following section).
+The majority of the studies listed previously only examine one platform, and it is currently unknown whether the results would apply across several different platforms. Furthermore, the iterative compilation and other adaptive techniques used can leave holes of potential combinations of optimizations unexplored (due to the huge numbers of combinations possible). This lead to the most optimal configurations not being found. In this paper we present another technique for testing the effectiveness of large numbers of compiler optimization flags and their impact on energy consumption and run-times. The technique is based on the concept of fractional factorial designs (discussed in a following section).
 
-To explore the impact  realistic set of test input programs is needed. Since there have been many attempts to find representative programs, but none apply to a wide range of embedded processing systems, a set of benchmarks has been derived from contemporary suites. This set of 10 benchmarks (shown in Table~\ref{Table:Benchmarks}) covers real world and synthetic applications across different aspects of the target platform. Previous work on modeling the energy consumption of processors has shown that the pipelines and functional units enabled have a significant impact on the energy consumption. To cover these points, the benchmarks were chosen to cover the following coarse criteria:
+To explore the impact of the optimizations, a realistic set of test input programs is needed. Since there have been many attempts to find representative programs, but none apply to a wide range of embedded processing systems, a set of benchmarks has been derived from contemporary suites. This set of 10 benchmarks (shown in Table~\ref{Table:Benchmarks}) covers real world and synthetic applications across different aspects of the target platform. Previous work on modeling the energy consumption of processors has shown that the pipelines and functional units enabled have a significant impact on the energy consumption. To cover these points, the benchmarks were chosen to cover the following coarse criteria:
 \begin{itemize}
 	\setlength{\itemsep}{0em}
 	% \setlength{\parskip}{1pt}
@@ -225,7 +224,9 @@ To explore the impact  realistic set of test input programs is needed. Since the
 	\item \textbf{Branch frequency.} How often the code branches.
 \end{itemize}
 
-These benchmarks were constructed to run on the `bare metal' --- no host OS needed. This prevents the benchmark from being preempted by an operating system performing a background task and reducing the accuracy of the results. The benchmarks must also be chosen careful with regards to cache performance. In this study we by passed the issue by choosing benchmarks that were small enough to fit into the L1 cache of the only platform with caches (Cortex-A8). All the measurements were `warm-start', minimizing the impact on the results that the cache would have.
+Similar categories of instruction types have been used previously to give a high level overview of the type of computation an application is performing\cite{HennessyPatterson}. MiBench\cite{MiBench} uses a finer-grained version of these categories in its analysis.
+
+These benchmarks were constructed to run on the `bare metal' --- no host OS needed. This prevents the benchmark from being preempted by an operating system performing a background task and reducing the accuracy of the results. The benchmarks must also be chosen carefully with regards to cache performance. In this study we bypassed the issue entirely by choosing benchmarks that were small enough to fit into the L1 cache of the only platform with caches (Cortex-A8). All the measurements were `warm-start', minimizing the impact on the results that the cache would have.
 
 In this paper we explore the impact of compiler optimizations using the GCC toolchain on the architectures in Table~\ref{Table:Platforms}. GCC exposes its various optimizations via a number of flags that can be passed to the compiler. We explore what flags are and are not significant for energy consumption and execution time.
 
@@ -236,6 +237,12 @@ The experiments are performed with different benchmarks, so a full picture of ar
  	\item The relationship between time and energy.
  	\item Architectural and application effects.
  \end{itemize}
+
+\section{Hardware Setup}
+
+All the measurements were taken using the INA219 power monitoring IC\cite{INA219}, which provides power, current and voltage outputs.
+
+The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recording the power consumed by the whole microprocessor. For the BeagleBone there are three available measurement points: the Cortex-A8 core (including caches), on-chip peripherals (power management, bus controllers) and the external SDRAM memory IC. This allows the effect of the compiler optimizations on the memory to be recorded. Adapteva's Epiphany board has two measurement points: the core power consumption and IO power consumption, whereas the XMOS board's measurement point gathers power consumption data for the core of the processor.
 
 \section{Fractional Factorial Design}
 
@@ -256,12 +263,6 @@ Using the Yates algorithm\cite{BoxHunter} the effect for any single or combinati
 
 All FFDs used were generated by R\cite{R}, using the FrF2 library\cite{FrF2}.
 
-\section{Hardware Setup}
-
-All the measurements were taken using the INA219 power monitoring IC\cite{INA219}, which provides power, current and voltage outputs.
-
-The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recording the power consumed by the whole microprocessor. For the BeagleBone there are three available measurement points: the Cortex-A8 core (including caches), on-chip peripherals (power management, bus controllers) and the external SDRAM memory IC. This allows the effect of the compiler optimizations on the memory to be recorded. Adapteva's Epiphany board has two measurement points: the core power consumption and IO power consumption, whereas the XMOS board's measurement point gathers power consumption data for the core of the processor.
-
 \section{Results}
 
 \subsection*{Time and Energy}
@@ -281,24 +282,22 @@ The Cortex-M0 and Cortex-M3 boards both have a single measurement point, recordi
 \begin{figure*}[tb!]
 	\centering
 	\includegraphics[width=\textwidth,clip, trim=0cm 0cm 0 2.1cm]{levels.pdf}
-	\caption{Energy, Time and Power results for benchmark-platform combinations. Optimization levels \texttt{O0} to \texttt{O4}. \texttt{O4} is \texttt{O3} with link-time optimization. The last point is \texttt{Os} --- optimize for space. }
+	\caption{Energy, time and power results for benchmark-platform combinations. Optimization levels \texttt{O0} to \texttt{O4}. \texttt{O4} is \texttt{O3} with link-time optimization. The last point is \texttt{Os} --- optimize for space. }
 	\label{Fig:OverallView}
 \end{figure*}
-This study aims to establish whether execution time and energy consumption are highly correlated in the majority of cases. This hypothesis underlies many of the assumptions of the energy-efficiency community relating to the best way forward in producing energy-efficient software. Overall it was found that this hypothesis is correct, with some small divergences for the Cortex-A8. This platform has superscalar execution (thus reducing execution time more than energy) and NEON SIMD instructions (possibly reducing energy more than execution time). This section presents the results supporting this conclusion, and discusses some of the cases where there is a difference between energy consumption and execution time.
+This study aims to establish whether execution time and energy consumption are highly correlated in the majority of cases. This hypothesis underlies many of the assumptions of the energy-efficiency community relating to the best way forward in producing energy-efficient software. Overall it was found that this hypothesis is correct, with some small divergences for the Cortex-A8. This section presents the results supporting this conclusion, and discusses some of the cases where there is a difference between energy consumption and execution time.
 
-A high level overview of each platform and benchmark for different optimization levels is given in Figure~\ref{Fig:OverallView}. This figure shows a small line graph for each combination, displaying the effect of the broad optimization levels \texttt{O1}, \texttt{O2}, \texttt{O3}, \texttt{O4} (\texttt{O3} with link time optimization) and \texttt{Os} (optimize for space) on time, energy and power.
+A high level overview of each platform and benchmark for different optimization levels is given in Figure~\ref{Fig:OverallView}. This figure shows a small line graph for each combination, displaying the effect of the broad optimization levels \texttt{O1}, \texttt{O2}, \texttt{O3}, \texttt{O4} (\texttt{O3} with link time optimization) and \texttt{Os} (optimize for space) on time, energy and power. The following section discusses the conclusions that can be drawn from this graph.
 
 Further results showing the correlation between time and energy are shown in Figure~\ref{Fig:BlowfishMainEffects}. This shows the main effect each optimization has on the runtime and energy consumption, as calculated by the FFD. As these results come from a total of 2048 seperate runs, even a small percentage change is statistically significant. This significance is calculated using the Mann-Whitney test --- the bracket above the bars indicates when the results satisfies the following hypothesis: it is 95\% certain that the result represents a signficant impact on the energy consumption of the benchmark.
 
-Figure~\ref{Fig:FdctO2MainEffects} highlights a discrepancy that occurred between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce instruction stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
-
-For the cubic benchmark there is a much smaller performance gain from the optimizations than with the other benchmarks. This is due to the main computational body of work being done by the precompiled libraries providing the trigonometric functions.
+Figure~\ref{Fig:FdctO2MainEffects} highlights a discrepancy that occurred between execution time and energy consumption, even for very similar optimizations. The first two options listed (\texttt{-fschedule-insns} and \texttt{-fschedule-insns2}) both schedule instructions to reduce pipeline stalls. However the latter option performs its scheduling pass after register allocation, where as the first performs it before. In this case scheduling before the register allocation reduces the energy consumption by much more than the execution time.
 
 \subsection{Architectures and their Effects}
 
 The following paragraphs explore the architectural details of the processors, and how they are connected to the energy consumption.
 
-For the Cortex-M0, very little difference between energy and time is seen due to it being the simplest processor tested: it has a three stage pipeline without forwarding logic. The pipeline never stalls unless it encounters a load, in which case it always stalls. The Cortex-M3 exhibits very similar behavior, with some very slight differences between energy and time. The micro-architecture in this processor is more complex, featuring branch speculation and a larger instruction set\cite{Yiu2010}.
+For the Cortex-M0, very little difference between energy and time is seen due to it being the simplest processor tested: it has a three stage pipeline without forwarding logic. The pipeline never stalls unless it encounters a load or a branch, in which case it always stalls. The Cortex-M3 exhibits very similar behavior, with some very slight differences between energy and time. The micro-architecture in this processor is more complex, featuring branch speculation and a larger instruction set\cite{Yiu2010}.
 
 The XMOS processor has a four stage pipeline, similar to the Cortex-M3 in complexity and performance. It should also be noted that the compiler for the XMOS processor uses an LLVM backend for code generation, featuring different optimizations. Due to this the result set for this processor is not as extensive as the other four.
 
@@ -331,7 +330,7 @@ The greatest difference between energy and time was discovered while using the C
 	\label{Table:SIMD}
 \end{table}
 
-An interesting effect is seen in 2D FIR for the Cortex-A8. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation, this is caused bt the \texttt{-ftree-vectorize} optimization having an impact on energy consumptions with no change in execution time (shown in Figure~\ref{Fig:O3_2dfir_A8}). This option vectorizes loops, so that SIMD instructions can be inserted.
+An interesting effect is seen in 2D FIR for the Cortex-A8. The execution time decreases more than the energy consumption up to \texttt{O2}, but when enabling \texttt{O3} the energy decreases more than the execution time. On further investigation, this is caused bt the \texttt{-ftree-vectorize} optimization having an impact on energy consumption with no change in execution time (shown in Figure~\ref{Fig:O3_2dfir_A8}). This option vectorizes loops, so that SIMD instructions can be inserted.
 
 Further investigation of the NEON SIMD unit was done using some small micro-benchmarks. The results of these are shown in Table~\ref{Table:SIMD}, showing for multiplication the NEON unit uses a lot less power than using the normal Cortex-A8 multiplier. This shows that by using the hardware to its full capacity, the greatest energy savings can be achieved.
 
@@ -383,17 +382,17 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 
 \subsection{The Universality of Flags}
 
-An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a larger average effect than 1\%) identified for each benchmark and platform combination.  Each letter represents an optimization that is labeled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due to time constraints when taking the measurements.
+An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a significant effect, as per the Mann-Whitney test) identified for each benchmark and platform combination.  Each letter represents an optimization that is labeled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due internal compiler errors thrown by the unusual combination of optimizations.
 
 Only 20 out of 82 options examined (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
-It can be seen that for the ARM platforms a similar set of options is seen for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this can allow the compiler to eliminate parts of the control flow graph, if the code is never called, removing branches and decreasing the overall amount of work the application performs.
+It can be seen that for the ARM platforms a similar set of options appears for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this can allow the compiler to eliminate parts of the control flow graph, removing branches and decreasing the overall amount of work the application performs.
 
 The optimization listed most frequently in the table is \texttt{-ftree-dominator-opts}. The prevalence of this flag is likely due to it enabling several simple optimization passes, performing optimizations such as copy propagation and expression simplification. Another effective optimization is \texttt{-fomit-frame-pointer}. This optimization frees an additional register for general use by not using a frame pointer. This optimization is seen frequently on the ARM platforms, however not at all on the Epiphany. This is likely due to the ARM processors suffering from greater register pressure as they only have 16 registers compared to the Epiphany's 64.
 
 We see some interesting correlations between platforms. The optimizer has trouble optimizing the crc32 benchmark, with the Cortex-M0 and Cortex-M3 only having one optimization which has any significant effects (\texttt{-fmove-loop-invariants}). The Cortex-A8 sees an additional optimization having an effect, however this is still secondary to the previously mentioned optimization (it had an average of a 1.3\% effect on the energy consumption).
 
-As mentioned in previous sections, similar options are seen to affect the energy consumption across benchmarks. This is due to the optimizations being targeted to specific high level language constructs, which only appear in some of the benchmarks. These results show the difficulty of choosing one optimization which is good in all cases. In many cases the instruction set and micro-architecture of the processor have a large effect on how much the energy consumption is reduced, meaning that a singularly good optimization cannot be chosen.
+As observed in previously, similar options are seen to affect the energy consumption across benchmarks. This is due to the optimizations being targeted to specific high level language constructs, which only appear in some of the benchmarks. These results show the difficulty of choosing one optimization which is good in all cases. In many cases the instruction set and micro-architecture of the processor have a large effect on how much the energy consumption is reduced, meaning that a singularly good optimization cannot be chosen.
 
 \subsection{Optimization Chaos}
 \begin{figure*}[t!h]
@@ -452,7 +451,7 @@ In Figure~\ref{Fig:AddsubO1Blowfish}, several unexpected effects worthy of furth
 		\texttt{O1} (\%) & Percentage relative to \texttt{O1}. \\
 		\texttt{O2} (\%) & Percentage relative to \texttt{O2}. \\
 	\end{tabular}
-	\caption{Legend for Table~\ref{Table:Exhaustive}}.
+	\caption{Legend for Table~\ref{Table:Exhaustive}.}
 	\label{Table:ExhaustiveLegend}
 \end{table}
 
@@ -490,7 +489,7 @@ The three options with the highest impact are the same in both model and actual 
         \centering
 		\includegraphics[width=0.9\linewidth, clip, trim= 8.8cm 0 7cm 2cm]{cortex-m0/o1cub_-7p5_10_pred.png}
     \end{minipage}
-    \caption{Effect on execution time and energy consumption from turning on just two optimization flags at a time (all other options off). The actual result is shown on the left, and the prediction on the right.}
+    \caption{Effect on execution time and energy consumption from turning on just two optimization flags at a time (all other options off). The actual result is shown on the left, and the prediction on the right. The analysis used the cubic benchmark on the Cortex-M0.}
     \label{Fig:twoway_cubic}
 \end{figure*}
 
@@ -507,17 +506,17 @@ The hardware measurements have several sources of error. The most apparent error
 
 The existing collections of optimizations at the various levels (\texttt{O1}, etc.) do a good job of optimizing for performance, and consequently, energy. These strike a good balance between ease of use and performance. However, they will never be as optimal as searching through the full optimization space. To avoid running many tests to find a good solution, developing machine-learning compiler technologies similar to MILEPOST GCC would be fitting. A reasonable set of optimizations could be predicted, greatly reducing time spent searching. This is especially true as the effectiveness and types of optimizations was found to be heavily based on the structure of the application being compiled itself. Implementing this would reduce compile times as well as the energy and execution time of the application.
 
-This study focused on GCC, as it is a mature compiler supporting many different platforms and optimizations. The LLVM compiler is relatively new, but has a well defined set of optimization passes, whose order can easily be specified. This extra flexibility means there may be a better solution to find, but you are essentially searching for a sharper needle in a bigger haystack. The benefits from having this much larger space to explore may not be worth the trade-off of the time it takes to find it. Therefore, it is unlikely that we will ever be able to obtain the goal of easy optimization for run-time or energy, and will remain constrained to sub-optimal but balanced sets of flags such as \texttt{O3}.
+This study focused on GCC, as it is a mature compiler supporting many different platforms and optimizations. As an alternative, the LLVM compiler\cite{LLVM} is relatively new, but has a well defined set of optimization passes, whose order can easily be specified. This extra flexibility means there may be a better solution to find, but also that it is essentially searching for a sharper needle in a bigger haystack. The benefits from having this much larger space to explore may not be worth the trade-off of the time it takes to find it. Therefore, it is unlikely that we will ever be able to obtain the goal of easy optimization for run-time or energy, and will remain constrained to sub-optimal but balanced sets of flags such as \texttt{O3} or longer search-based methods.
 
 \section{Conclusion}
 
-In this study, we used fractional factorial design to explore the execution time and energy consumption optimization space for compilers. We observed its effect on both energy consumption and draw conclusions about what optimizations can and cannot provide global improvements in performance. In comparison to other methods such as iterative compilation, FFD is a good alternative because with a small number of runs the options affecting the energy consumption can be quickly found. We have refined the FFD methodology to allow the number of runs to be decreased further. This would allow more interactions to be resolved, with a higher overall level of accuracy.
+In this study, we used fractional factorial design to explore the execution time and energy consumption optimization space for compilers. We observed its effect on energy consumption and draw conclusions about what optimizations can and cannot provide global improvements in performance. In comparison to other methods such as iterative compilation, FFD is a good alternative because with a small number of runs the options affecting the energy consumption can be quickly found.
 
 We have shown that the assumption of no higher order compiler optimization interactions is incorrect. We substantiate this by showing the amount of variation seen between tests with different options enabled. In general, exploring the optimization space is time intensive and difficult to explore in a structured manner. Therefore, FFD and iterative techniques will always be necessary.
 
 We have shown that in almost all cases the execution time and energy consumption of a benchmark are highly correlated, across five different platforms. Most of the current optimizations in GCC reduce the total workload of the program, which in turn reduces both the time and the energy. This could be an artifact of all current optimization passes being designed to increase performance: energy reduction is purely a side-effect. If energy reduction without a corresponding change in performance is required, other optimizations will have to be implemented.
 
-It is very difficult to predict which optimizations will have an effect, whether that effect is positive, negative, or not impacting the benchmark at all. Among the options that do have an effect, there are many interactions. This results in a very chaotic space to explore, that empirically is affected more by the choice of benchmark than the platform it is running on. This highlights the importance of using more than one benchmark, and having that set of benchmarks cover different types of applications. In practical use, this means that no benchmark can be said to have similar optimizations to any related program, and the need for program-specific optimization will always exist. In this context, our refined low cost optimization exploration technique is all the more necessary.
+It is very difficult to predict which optimizations will have an effect, whether that effect is positive, negative, or not impacting the benchmark at all. Among the options that do have an effect, there are many interactions. This results in a very chaotic space to explore, that empirically is affected more by the choice of benchmark than the platform it is running on. This highlights the importance of using more than one benchmark, and having that set of benchmarks cover different types of applications. In practical use, this means that no benchmark can be said to have similar optimizations to any related program, and the need for program-specific optimization will always exist.
 
 \printbibliography
 
