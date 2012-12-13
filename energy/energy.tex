@@ -51,7 +51,7 @@
 % }
 
 \author{
-\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont James Pallister\\[0.5em]\texttt{james.pallister@bris.ac.uk}}
+\parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont James Pallister\\[0.5em]\texttt{jp@cs.bris.ac.uk}}
 \parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont Simon Hollis\\[0.5em]\texttt{simon@cs.bris.ac.uk}}
 \parbox{0.33\linewidth}{\centering\fontsize{13}{1}\selectfont Jeremy Bennett\\[0.5em]\texttt{jeremy.bennett@embecosm.com}} \\[1.5em]
 \parbox{0.66\linewidth}{\centering\fontsize{12}{1}\selectfont
@@ -224,7 +224,7 @@ To explore the impact of the optimizations, a realistic set of test input progra
 	\item \textbf{Branch frequency.} How often the code branches.
 \end{itemize}
 
-Similar categories of instruction types have been used previously to give a high level overview of the type of computation an application is performing\cite{HennessyPatterson}. MiBench\cite{MiBench} uses a finer-grained version of these categories in its analysis.
+Similar categories of instruction types have been used previously to give a high level overview of the type of computation an application is performing\cite{Hennessy2012}. MiBench\cite{MiBench} uses a finer-grained version of these categories in its analysis.
 
 These benchmarks were constructed to run on the `bare metal' --- no host OS needed. This prevents the benchmark from being preempted by an operating system performing a background task and reducing the accuracy of the results. The benchmarks must also be chosen carefully with regards to cache performance. In this study we bypassed the issue entirely by choosing benchmarks that were small enough to fit into the L1 cache of the only platform with caches (Cortex-A8). All the measurements were `warm-start', minimizing the impact on the results that the cache would have.
 
