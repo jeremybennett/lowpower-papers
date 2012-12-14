@@ -345,16 +345,16 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 	\begin{tabular}{l >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c >{\ttfamily} c }
 		\bfseries Benchmark&\rmfamily\bfseries Cortex-M0&\rmfamily\bfseries Cortex-M3 & \rmfamily\bfseries Cortex-A8		& \rmfamily\bfseries Epiphany\\
 		\hline
-		2dfir          & E & T, G, H & N, G, C & H, A, D\\
-		blowfish       & B, J, E & J, B, G & K, B, E & D, P, H\\
-		crc32          & F & F & F, G & \\
-		cubic          & A, I & A, I & A & A, I, O\\
-		dijkstra       & I, A, B & F, I, A & F, I, A & \\
-		fdct           & J, G, D & J, G, K & M, K, J & A, H, D\\
-		float\_matmult & C, E & C, E, G & N, L & D, H, A\\
-		int\_matmult   & C, E, B & C, L, F & L, N, M & A, H, D\\
-		rijndael       &  & B, C, R & K, B, S & \\
-		sha            & B, C, E & C, B, F & C, B, M & D, C, Q\\
+		2dfir          &  E        &  T, G, I  &  N, G, B  &  I, A, D  \\
+		blowfish       &  C, J, E  &  J, C, G  &  K, C, E  &  D, P, I  \\
+		crc32          &  F        &  F        &  F, G     &  None     \\
+		cubic          &  A, H     &  A, H     &  A        &  A, H, R  \\
+		dijkstra       &  H, A, C  &  F, H, A  &  F, H, A  &  H, A     \\
+		fdct           &  J, G, D  &  J, G, K  &  M, K, J  &  A, I, D  \\
+		float\_matmult &  B, E     &  B, E, G  &  N, L     &  D, I, A  \\
+		int\_matmult   &  B, E, C  &  B, L, F  &  L, N, M  &  A, I, D  \\
+		rijndael       &  C, B, O  &  C, B, O  &  K, C, S  &  D, K, B  \\
+		sha            &  C, B, E  &  B, C, F  &  B, C, M  &  D, B, Q  \\
 
 	\end{tabular} \\[1em]
 
@@ -364,15 +364,15 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 	\bfseries ID & \multicolumn{2}{l}{\bfseries Count\hspace{1.2cm}Flag} &\bfseries ID & \multicolumn{2}{l}{\bfseries  Count\hspace{1.2cm}Flag} \\
 	\hline
 	\fontsize{9}{1}\selectfont
-	A & 11 & -ftree-dominator-opts & 	 K & 4  & -fschedule-insns \\
-	B & 10 & -fomit-frame-pointer &      L & 3  & -finline-small-functions \\
-	C & 10 & -ftree-loop-optimize &      M & 3  & -fschedule-insns2 \\
-	D & 7  & -fdce &                     N & 3  & -ftree-pre \\
-	E & 7  & -fguess-branch-probability &    O & 1  & -fcombine-stack-adjustments \\
+	A & 12 & -ftree-dominator-opts & 	 K & 5  & -fschedule-insns \\
+	B & 12 & -ftree-loop-optimize &      L & 3  & -finline-small-functions \\
+	C & 11 & -fomit-frame-pointer &      M & 3  & -fschedule-insns2 \\
+	D & 8  & -fdce &                     N & 3  & -ftree-pre \\
+	E & 7  & -fguess-branch-probability& O & 2  & -ftree-sra \\
 	F & 7  & -fmove-loop-invariants &    P & 1  & -fipa-profile \\
 	G & 7  & -ftree-ter &                Q & 1  & -ftree-pta \\
-	H & 6  & -ftree-ch &                 R & 1  & -ftree-sra \\
-	I & 6  & -ftree-fre &                S & 1  & -fgcse  \\
+	H & 7  & -ftree-fre &                R & 1  & -fcombine-stack-adjustments \\
+	I & 6  & -ftree-ch &                 S & 1  & -fgcse  \\
 	J & 5  & -ftree-forwprop &           T & 1  & -fpeephole2 \\
 	\end{tabular}
 
@@ -385,7 +385,7 @@ Further investigation of the NEON SIMD unit was done using some small micro-benc
 
 \subsection{The Universality of Flags}
 
-An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a significant effect, as per the Mann-Whitney test) identified for each benchmark and platform combination.  Each letter represents an optimization that is labeled in the the table below. This table also specifies the number of times this flag occurs. Several results are missing for the Epiphany platform due internal compiler errors thrown by the unusual combination of optimizations.
+An interesting problem for compiler designers is how to choose an optimal set of flags across different hardware platforms and applications. This section explores which individual flags had the largest effect in our experiments and establishes whether a set of consistently good optimizations are seen across each benchmark and platform. Table~\ref{Table:BestFlags} lists the results for this section, with the top three optimization flags (where that optimization has a significant effect, as per the Mann-Whitney test) identified for each benchmark and platform combination.  Each letter represents an optimization that is labeled in the the table below. This table also specifies the number of times this flag occurs.
 
 Only 20 out of 82 options examined (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
