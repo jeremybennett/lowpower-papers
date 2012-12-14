@@ -389,12 +389,12 @@ An interesting problem for compiler designers is how to choose an optimal set of
 
 Only 20 out of 82 options examined (the number of flags enabled by \texttt{O1}, \texttt{O2} and \texttt{O3}) appear in the table. This adds weight to the argument that many of the options have little effect on the energy consumption (and performance).
 
-It can be seen that for the ARM platforms a similar set of options appears for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy consumption. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this can allow the compiler to eliminate parts of the control flow graph, removing branches and decreasing the overall amount of work the application performs.
+For the ARM platforms a similar set of options appears for the same benchmarks. Common options for the same benchmarks are expected, as optimizations are triggered by the structure of the source code. However, the opposite of this is seen for the Epiphany platform --- there are three optimizations that are consistently effective at reducing energy. In particular, an unusual option to be consistently effective is \texttt{-fdce}. This optimization is dead code elimination, eliminating code which is never used by the application. However, this allows compiler to eliminate parts of the control flow graph, removing branches and decreasing the amount of work the application performs.
 
 The optimization listed most frequently in the table is \texttt{-ftree-dominator-opts}. The prevalence of this flag is likely due to it enabling several simple optimization passes, performing optimizations such as copy propagation and expression simplification. Another effective optimization is \texttt{-fomit-frame-pointer}. This optimization frees an additional register for general use by not using a frame pointer. This optimization is seen frequently on the ARM platforms, however not at all on the Epiphany. This is likely due to the ARM processors suffering from greater register pressure as they only have 16 registers compared to the Epiphany's 64.
 
 \begin{figure*}[t!h]
-	\includegraphics[width=\linewidth,clip,trim=0.5cm 1.0cm 0cm 1.8cm]{cortex-m3/O1_addsub_blowfish.pdf}
+	\includegraphics[width=\linewidth,clip,trim=0.5cm 0.1cm 0cm 1.8cm]{cortex-m3/O1_addsub_blowfish.pdf}
 	\caption{Blowfish benchmark on the Cortex-M3 platform. Individual options are enabled or disabled on top of the \texttt{O1} optimization level.}
 	\label{Fig:AddsubO1Blowfish}
 \end{figure*}
